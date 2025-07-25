@@ -294,3 +294,73 @@
     gap: 1rem;
   }
 }
+
+/* Auth Alert Dialog Styles */
+.auth-alert-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1a2438;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 1000;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.auth-alert-dialog h2 {
+  color: #FFD600;
+  margin-bottom: 1rem;
+}
+
+.auth-alert-dialog p {
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.auth-alert-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.auth-alert-actions button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sign-in-btn {
+  background: #FFD600;
+  color: #0a0f1a;
+  border: none;
+}
+
+.cancel-auth-btn {
+  background: #2a3854;
+  color: #fff;
+  border: none;
+}
+
+.sign-in-btn:hover {
+  background: #ffe666;
+}
+
+.cancel-auth-btn:hover {
+  background: #374a6b;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 999;
+}

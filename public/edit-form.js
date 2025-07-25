@@ -90,9 +90,24 @@ async function loadFormData() {
     const formData = formDoc.data();
     
     // Populate form fields
-    document.getElementById('formTitle').value = formData.title;
-    document.getElementById('formDescription').value = formData.description;
-    document.getElementById('dueDate').value = formData.dueDate.toDate().toISOString().slice(0, 16);
+    document.getElementById('formTitle').value = formData.title || '';
+    document.getElementById('formDescription').value = formData.description || '';
+    
+    // Handle due date - it might be a Firestore Timestamp or a Date object
+    if (formData.dueDate) {
+      let dueDateValue;
+      if (typeof formData.dueDate.toDate === 'function') {
+        // It's a Firestore Timestamp
+        dueDateValue = formData.dueDate.toDate().toISOString().slice(0, 16);
+      } else if (formData.dueDate instanceof Date) {
+        // It's already a Date object
+        dueDateValue = formData.dueDate.toISOString().slice(0, 16);
+      } else if (typeof formData.dueDate === 'string') {
+        // It's a string, try to parse it
+        dueDateValue = new Date(formData.dueDate).toISOString().slice(0, 16);
+      }
+      document.getElementById('dueDate').value = dueDateValue;
+    }
     
     // Set form type
     currentFormType = formData.type;
@@ -104,7 +119,7 @@ async function loadFormData() {
     }
 
     // Load questions
-    questions = formData.questions;
+    questions = formData.questions || [];
     questions.forEach(question => {
       addQuestion(question.type, question);
     });
