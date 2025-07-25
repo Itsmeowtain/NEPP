@@ -232,14 +232,10 @@ async function handleFormSubmit(e) {
   }
 }
 
-// In your forms.js file, update the edit button click handler
-formCard.querySelector('.edit-form-btn').addEventListener('click', () => {
-  window.location.href = `edit-form.html?id=${doc.id}`;
-});
-
 function addQuestion(type, existingQuestion = null) {
   const questionDiv = document.createElement('div');
   questionDiv.className = 'question-container';
+  questionDiv.dataset.type = type;
   
   const questionData = existingQuestion || {
     type: type,
@@ -289,7 +285,7 @@ function generateQuestionInputs(type, data) {
     case 'Checkboxes':
       return `
         <div class="options-container">
-          ${(data.options || []).map(option => `
+          ${(data.options || ['Option 1']).map(option => `
             <div class="option-row">
               <input type="text" class="option-input" value="${option}">
               <button type="button" class="delete-option-btn">Delete</button>
@@ -315,47 +311,4 @@ function generateQuestionInputs(type, data) {
     default:
       return '';
   }
-}
-
-// Add event listeners for form type buttons
-document.querySelectorAll('.form-type-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.form-type-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFormType = btn.dataset.type;
-    document.getElementById('groupSelector').style.display = 
-      currentFormType === 'private' ? 'block' : 'none';
-    updateFormState();
-  });
-});
-
-// Add event listeners for question type buttons
-document.querySelectorAll('.question-type-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    addQuestion(btn.dataset.type);
-  });
-});
-
-function setupOptionManagement(questionDiv) {
-  const optionsContainer = questionDiv.querySelector('.options-container');
-  
-  // Add new option
-  optionsContainer.querySelector('.add-option-btn').addEventListener('click', () => {
-    const optionRow = document.createElement('div');
-    optionRow.className = 'option-row';
-    optionRow.innerHTML = `
-      <input type="text" class="option-input" value="New Option">
-      <button type="button" class="delete-option-btn">Delete</button>
-    `;
-    optionsContainer.insertBefore(optionRow, optionsContainer.lastElementChild);
-    updateQuestions();
-  });
-
-  // Delete option
-  optionsContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('delete-option-btn')) {
-      e.target.parentElement.remove();
-      updateQuestions();
-    }
-  });
 }
