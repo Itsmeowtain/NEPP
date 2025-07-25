@@ -312,3 +312,27 @@ function generateQuestionInputs(type, data) {
       return '';
   }
 }
+
+function setupOptionManagement(questionDiv) {
+  const optionsContainer = questionDiv.querySelector('.options-container');
+  
+  // Add new option
+  optionsContainer.querySelector('.add-option-btn').addEventListener('click', () => {
+    const optionRow = document.createElement('div');
+    optionRow.className = 'option-row';
+    optionRow.innerHTML = `
+      <input type="text" class="option-input" value="New Option">
+      <button type="button" class="delete-option-btn">Delete</button>
+    `;
+    optionsContainer.insertBefore(optionRow, optionsContainer.lastElementChild);
+    updateQuestions();
+  });
+
+  // Delete option
+  optionsContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-option-btn')) {
+      e.target.parentElement.remove();
+      updateQuestions();
+    }
+  });
+}
