@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /* Create Form Page Styles */
 .nepp-root {
   display: flex;
@@ -403,7 +402,7 @@ input[type="checkbox"] {
   .form-type-selector {
     flex-direction: column;
   }
-=======
+}
 /* Create Form Page Styles */
 .nepp-root {
   display: flex;
@@ -808,5 +807,4 @@ input[type="checkbox"] {
   .form-type-selector {
     flex-direction: column;
   }
->>>>>>> cde9eecef83a6e26d598ee3b0b4203a0e682cda7
 }
