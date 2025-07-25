@@ -10,6 +10,7 @@ import {
 let currentFormType = 'public';
 let questions = [];
 let formId = null;
+let isInitialized = false;
 
 // Get form ID from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
@@ -19,19 +20,63 @@ if (!formId) {
   window.location.href = 'forms.html';
 }
 
+// Show authentication alert dialog
+function showAuthAlert() {
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  
+  const dialog = document.createElement('div');
+  dialog.className = 'auth-alert-dialog';
+  dialog.innerHTML = `
+    <h2>Sign In Required</h2>
+    <p>You need to be signed in to edit forms. Would you like to sign in now?</p>
+    <div class="auth-alert-actions">
+      <button class="sign-in-btn">Sign In</button>
+      <button class="cancel-auth-btn">Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(dialog);
+
+  dialog.querySelector('.sign-in-btn').addEventListener('click', () => {
+    window.location.href = 'login.html';
+  });
+
+  dialog.querySelector('.cancel-auth-btn').addEventListener('click', () => {
+    overlay.remove();
+    dialog.remove();
+    window.location.href = 'forms.html';
+  });
+}
+
 // Initialize event listeners and load form data
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!auth.currentUser) {
-    showAuthAlert();
-    return;
-  }
-
-  // Load existing form data
-  await loadFormData();
-
-  // Add the same event listeners as in create-form.js
-  // ... (copy the event listeners from create-form.js)
+document.addEventListener('DOMContentLoaded', () => {
+  // Set up the auth state listener first
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      // User is signed in
+      console.log('User is signed in:', user.email);
+      await loadFormData();
+      initializePage();
+    } else {
+      // User is not signed in
+      console.log('No user is signed in');
+      showAuthAlert();
+    }
+  });
 });
+
+function initializePage() {
+  if (isInitialized) return;
+  
+  initializeFormTypeButtons();
+  initializeQuestionTypeButtons();
+  initializeCancelButton();
+  initializeFormSubmission();
+  
+  isInitialized = true;
+}
 
 async function loadFormData() {
   try {
@@ -71,16 +116,102 @@ async function loadFormData() {
 }
 
 // Add the same helper functions as in create-form.js
-// ... (copy the helper functions from create-form.js)
+function initializeFormTypeButtons() {
+  const formTypeButtons = document.querySelectorAll('.form-type-btn');
+  formTypeButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      formTypeButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      currentFormType = button.getAttribute('data-type');
+      const groupSelector = document.getElementById('groupSelector');
+      if (groupSelector) {
+        groupSelector.style.display = currentFormType === 'private' ? 'block' : 'none';
+      }
+    });
+  });
+}
+
+function initializeQuestionTypeButtons() {
+  const questionTypeButtons = document.querySelectorAll('.question-type-btn');
+  questionTypeButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const type = button.getAttribute('data-type');
+      if (type) {
+        addQuestion(type);
+      }
+    });
+  });
+}
+
+function initializeCancelButton() {
+  const cancelButton = document.getElementById('cancelForm');
+  if (cancelButton) {
+    cancelButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+        window.location.href = 'forms.html';
+      }
+    });
+  }
+}
+
+function initializeFormSubmission() {
+  const form = document.getElementById('editFormForm');
+  if (form) {
+    form.addEventListener('submit', handleFormSubmit);
+  }
+}
+
+function updateQuestions() {
+  questions = [];
+  document.querySelectorAll('.question-container').forEach(container => {
+    const question = {
+      type: container.querySelector('.question-title-input').closest('.question-container').dataset.type,
+      question: container.querySelector('.question-title-input').value,
+      required: container.querySelector('.required-toggle input').checked,
+      options: [],
+      scale: null
+    };
+
+    // Get options for multiple choice and checkboxes
+    if (question.type === 'Multiple Choice' || question.type === 'Checkboxes') {
+      const optionInputs = container.querySelectorAll('.option-input');
+      question.options = Array.from(optionInputs).map(input => input.value).filter(val => val.trim());
+    }
+
+    // Get scale settings for linear scale
+    if (question.type === 'Linear Scale') {
+      const scaleMin = container.querySelector('.scale-min');
+      const scaleMax = container.querySelector('.scale-max');
+      const scaleMinLabel = container.querySelector('.scale-min-label');
+      const scaleMaxLabel = container.querySelector('.scale-max-label');
+      
+      if (scaleMin && scaleMax && scaleMinLabel && scaleMaxLabel) {
+        question.scale = {
+          min: parseInt(scaleMin.value),
+          max: parseInt(scaleMax.value),
+          minLabel: scaleMinLabel.value,
+          maxLabel: scaleMaxLabel.value
+        };
+      }
+    }
+
+    questions.push(question);
+  });
+}
 
 // Modify the form submission handler for updating instead of creating
-document.getElementById('editFormForm').addEventListener('submit', async (e) => {
+async function handleFormSubmit(e) {
   e.preventDefault();
   
   if (!auth.currentUser) {
     showAuthAlert();
     return;
   }
+
+  updateQuestions();
 
   const formData = {
     title: document.getElementById('formTitle').value,
@@ -99,7 +230,7 @@ document.getElementById('editFormForm').addEventListener('submit', async (e) => 
     console.error('Error updating form:', error);
     alert('Error updating form: ' + error.message);
   }
-});
+}
 
 // In your forms.js file, update the edit button click handler
 formCard.querySelector('.edit-form-btn').addEventListener('click', () => {
