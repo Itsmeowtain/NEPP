@@ -6,70 +6,110 @@ import {
   where,
   orderBy,
   deleteDoc,
-  doc
+  doc 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadForms();
+// Initialize the page with loading states
+document.addEventListener('DOMContentLoaded', () => {
+  const containers = ['publicFormsList', 'privateFormsList', 'userFormsList'];
+  containers.forEach(id => {
+    const container = document.getElementById(id);
+    if (container) {
+      container.innerHTML = '<p class="loading">Loading forms...</p>';
+    }
+  });
 });
 
-// Modify the loadForms function
-async function loadForms() {
-  const publicList = document.getElementById('publicFormsList');
-  const privateList = document.getElementById('privateFormsList');
-  
-  // Add loading state
-  publicList.innerHTML = '<p class="loading">Loading forms...</p>';
-  privateList.innerHTML = '<p class="loading">Loading forms...</p>';
+// Auth state observer
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await loadForms();
+  } else {
+    // Handle not signed in state
+    const containers = ['privateFormsList', 'userFormsList'];
+    containers.forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+        container.innerHTML = '<p class="no-forms">Please sign in to view forms</p>';
+      }
+    });
+    // Still load public forms
+    await loadPublicForms();
+  }
+});
 
+// Separate public forms loading
+async function loadPublicForms() {
   try {
-    // Get public forms
-    const publicFormsQuery = query(
+    const publicQuery = query(
       collection(db, 'forms'),
       where('type', '==', 'public'),
       orderBy('createdAt', 'desc')
     );
-    const publicFormsSnapshot = await getDocs(publicFormsQuery);
-    
-    if (!publicFormsSnapshot.empty) {
-      displayForms(publicFormsSnapshot, 'publicFormsList');
-    } else {
-      publicList.innerHTML = '<p class="no-forms">No public forms available</p>';
+    const publicSnapshot = await getDocs(publicQuery);
+    displayForms(publicSnapshot, 'publicFormsList');
+  } catch (error) {
+    console.error("Error loading public forms:", error);
+    const container = document.getElementById('publicFormsList');
+    if (container) {
+      container.innerHTML = '<p class="error">Error loading public forms</p>';
     }
+  }
+}
 
-    // Get private forms
-    if (auth.currentUser) {
+// Main forms loading function
+async function loadForms() {
+  if (!auth.currentUser) return;
+
+  try {
+    // Load public forms
+    await loadPublicForms();
+
+    // Load user's groups first
+    const userGroupsQuery = query(
+      collection(db, 'groups'),
+      where('members', 'array-contains', auth.currentUser.uid)
+    );
+    
+    const userGroups = await getDocs(userGroupsQuery);
+    const userGroupIds = userGroups.docs.map(doc => doc.id);
+
+    // Load private forms
+    if (userGroupIds.length > 0) {
       const privateFormsQuery = query(
         collection(db, 'forms'),
         where('type', '==', 'private'),
+        where('group', 'in', userGroupIds), // Use 'in' operator instead of multiple queries
         orderBy('createdAt', 'desc')
       );
       const privateFormsSnapshot = await getDocs(privateFormsQuery);
-      const userGroupsQuery = query(
-        collection(db, 'groups'),
-        where('members', 'array-contains', auth.currentUser.uid)
-      );
-      const userGroups = await getDocs(userGroupsQuery);
-      const userGroupIds = userGroups.docs.map(doc => doc.id);
-      
-      // Filter private forms
-      const userPrivateForms = privateFormsSnapshot.docs.filter(doc => 
-        userGroupIds.includes(doc.data().group)
-      );
-      
-      if (userPrivateForms.length > 0) {
-        displayForms({ docs: userPrivateForms }, 'privateFormsList');
-      } else {
-        privateList.innerHTML = '<p class="no-forms">No private forms available</p>';
-      }
+      displayForms(privateFormsSnapshot, 'privateFormsList');
     } else {
-      privateList.innerHTML = '<p class="no-forms">Sign in to view private forms</p>';
+      const container = document.getElementById('privateFormsList');
+      if (container) {
+        container.innerHTML = '<p class="no-forms">No private forms available</p>';
+      }
     }
+
+    // Load user's created forms
+    const userFormsQuery = query(
+      collection(db, 'forms'),
+      where('createdBy', '==', auth.currentUser.uid),
+      orderBy('createdAt', 'desc')
+    );
+    const userFormsSnapshot = await getDocs(userFormsQuery);
+    displayForms(userFormsSnapshot, 'userFormsList');
+
   } catch (error) {
     console.error("Error loading forms:", error);
-    publicList.innerHTML = '<p class="error">Error loading forms. Please try again.</p>';
-    privateList.innerHTML = '<p class="error">Error loading forms. Please try again.</p>';
+    const containers = ['privateFormsList', 'userFormsList'];
+    containers.forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+        container.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      }
+    });
   }
 }
 
@@ -177,4 +217,41 @@ document.querySelector('.forms-search input').addEventListener('input', (e) => {
 // Add create form button navigation
 document.getElementById('createFormBtn').addEventListener('click', () => {
   window.location.href = 'create-form.html';
+});
+
+// Add this at the end of the file
+document.getElementById('viewResultsBtn').addEventListener('click', () => {
+  const userForms = document.querySelectorAll('#userFormsList .form-card');
+  if (userForms.length === 0) {
+    alert('You have no forms to view results for');
+    return;
+  }
+
+  // If user has forms, show a dialog to select which form to view
+  const dialog = document.createElement('div');
+  dialog.className = 'form-select-dialog';
+  dialog.innerHTML = `
+    <div class="dialog-content">
+      <h2>Select a Form</h2>
+      <div class="form-list">
+        ${Array.from(userForms).map(form => `
+          <button class="form-select-btn" data-form-id="${form.querySelector('[data-form-id]').dataset.formId}">
+            ${form.querySelector('h3').textContent}
+          </button>
+        `).join('')}
+      </div>
+      <button class="cancel-btn">Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  dialog.addEventListener('click', (e) => {
+    if (e.target.classList.contains('form-select-btn')) {
+      const formId = e.target.dataset.formId;
+      window.location.href = `form-results.html?id=${formId}`;
+    } else if (e.target.classList.contains('cancel-btn') || e.target === dialog) {
+      dialog.remove();
+    }
+  });
 });

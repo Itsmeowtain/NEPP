@@ -1,59 +1,131 @@
-import { auth, db } from '/config/firebase-config.js';
+import { auth, db } from './config/firebase-config.js';
 import { 
   collection,
   addDoc,
-  getDocs, Timestamp
+  getDocs,
+  Timestamp 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
 
 let currentFormType = 'public';
 let questions = [];
+let isInitialized = false;
+
+// Show authentication alert dialog
+function showAuthAlert() {
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  
+  const dialog = document.createElement('div');
+  dialog.className = 'auth-alert-dialog';
+  dialog.innerHTML = `
+    <h2>Sign In Required</h2>
+    <p>You need to be signed in to create forms. Would you like to sign in now?</p>
+    <div class="auth-alert-actions">
+      <button class="sign-in-btn">Sign In</button>
+      <button class="cancel-auth-btn">Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(dialog);
+
+  dialog.querySelector('.sign-in-btn').addEventListener('click', () => {
+    window.location.href = 'login.html'; // Redirect to your login page
+  });
+
+  dialog.querySelector('.cancel-auth-btn').addEventListener('click', () => {
+    overlay.remove();
+    dialog.remove();
+    window.location.href = 'forms.html'; // Redirect back to forms list
+  });
+}
 
 // Initialize event listeners after DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Form type selector
-  document.querySelectorAll('.form-type-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      document.querySelectorAll('.form-type-btn').forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      currentFormType = button.dataset.type;
-      document.getElementById('groupSelector').style.display = 
-        currentFormType === 'private' ? 'block' : 'none';
-    });
-  });
-
-  // Question type buttons
-  document.querySelectorAll('.question-type-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      addQuestion(button.textContent.trim());
-    });
-  });
-
-  // Cancel button event listener
-  document.getElementById('cancelForm').addEventListener('click', () => {
-    window.location.href = 'forms.html';
+  // Set up the auth state listener first
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      // User is signed in
+      console.log('User is signed in:', user.email);
+      initializePage(); // Initialize the page when user is confirmed signed in
+    } else {
+      // User is not signed in
+      console.log('No user is signed in');
+      showAuthAlert();
+    }
   });
 });
 
-// Load groups for the selector
-async function loadGroups() {
-  const groupsSelect = document.getElementById('group');
-  try {
-    const querySnapshot = await getDocs(collection(db, 'groups'));
-    querySnapshot.forEach((doc) => {
-      const group = doc.data();
-      const option = document.createElement('option');
-      option.value = doc.id;
-      option.textContent = group.name;
-      groupsSelect.appendChild(option);
+// Add this near the top of your file
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    showAuthAlert();
+  }
+});
+
+function initializePage() {
+  if (isInitialized) return; // Prevent multiple initializations
+  
+  initializeFormTypeButtons();
+  initializeQuestionTypeButtons();
+  initializeCancelButton();
+  initializeFormSubmission();
+  loadGroups();
+  
+  isInitialized = true;
+}
+
+function initializeFormTypeButtons() {
+  const formTypeButtons = document.querySelectorAll('.form-type-btn');
+  formTypeButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      formTypeButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      currentFormType = button.getAttribute('data-type');
+      const groupSelector = document.getElementById('groupSelector');
+      if (groupSelector) {
+        groupSelector.style.display = currentFormType === 'private' ? 'block' : 'none';
+      }
     });
-  } catch (error) {
-    console.error("Error loading groups:", error);
+  });
+}
+
+function initializeQuestionTypeButtons() {
+  const questionTypeButtons = document.querySelectorAll('.question-type-btn');
+  questionTypeButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const type = button.getAttribute('data-type');
+      if (type) {
+        addQuestion(type);
+      }
+    });
+  });
+}
+
+function initializeCancelButton() {
+  const cancelButton = document.getElementById('cancelForm');
+  if (cancelButton) {
+    cancelButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to cancel? All progress will be lost.')) {
+        window.location.href = 'forms.html';
+      }
+    });
+  }
+}
+
+function initializeFormSubmission() {
+  const form = document.getElementById('createFormForm');
+  if (form) {
+    form.addEventListener('submit', handleFormSubmit);
   }
 }
 
 // Add question function with improved functionality
 function addQuestion(type) {
+  console.log('Adding question of type:', type); // Debug log
   const questionNumber = questions.length + 1;
   const questionData = {
     type: type,
@@ -67,7 +139,7 @@ function addQuestion(type) {
   questions.push(questionData);
   
   const questionHTML = `
-    <div class="question-card" data-id="${questionData.id}">
+    <div class="question-card" data-id="${questionData.id}" data-type="${type}">
       <div class="question-header">
         <h4>Question ${questionNumber}</h4>
         <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionData.id})">Delete</button>
@@ -85,7 +157,10 @@ function addQuestion(type) {
     </div>
   `;
   
-  document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
+  const questionsContainer = document.getElementById('questionsContainer');
+  if (questionsContainer) {
+    questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+  }
 }
 
 function getQuestionTypeHTML(type, id) {
@@ -181,57 +256,44 @@ function updateQuestionNumbers() {
 }
 
 // Add event delegation for dynamically added elements
-document.getElementById('questionsContainer').addEventListener('click', (e) => {
+document.addEventListener('click', (e) => {
   if (e.target.classList.contains('add-option-btn')) {
     const optionsList = e.target.closest('.options-list');
-    const questionId = optionsList.dataset.id;
-    const optionsCount = optionsList.querySelectorAll('.option-item').length;
-    const newOption = document.createElement('div');
-    newOption.className = 'option-item';
-    
-    if (optionsList.querySelector('.correct-option')) {
-      // Multiple Choice
-      newOption.innerHTML = `
-        <input type="text" placeholder="Option ${optionsCount + 1}" required>
-        <input type="radio" name="correct-${questionId}" class="correct-option" style="width: 20px; height: 20px; margin: 0 10px;">
-        <label style="color: #FFD600; margin-right: 10px;">Correct</label>
-        <button type="button" class="remove-option-btn">Remove</button>
-      `;
-    } else if (optionsList.querySelector('.checkbox-option')) {
-      // Checkboxes
-      newOption.innerHTML = `
-        <input type="text" placeholder="Option ${optionsCount + 1}" required>
-        <input type="checkbox" class="checkbox-option" style="width: 20px; height: 20px; margin: 0 10px;">
-        <button type="button" class="remove-option-btn">Remove</button>
-      `;
-    } else {
-      // Poll or other
-      newOption.innerHTML = `
-        <input type="text" placeholder="Option ${optionsCount + 1}" required>
-        <button type="button" class="remove-option-btn">Remove</button>
-      `;
+    if (optionsList) {
+      const questionId = optionsList.dataset.id;
+      const optionsCount = optionsList.querySelectorAll('.option-item').length;
+      addNewOption(optionsList, questionId, optionsCount + 1);
     }
-    
-    optionsList.insertBefore(newOption, e.target);
   } else if (e.target.classList.contains('remove-option-btn')) {
     const optionItem = e.target.closest('.option-item');
-    const optionsList = optionItem.parentElement;
-    if (optionsList.querySelectorAll('.option-item').length > 1) {
+    const optionsList = optionItem?.parentElement;
+    if (optionsList && optionsList.querySelectorAll('.option-item').length > 1) {
       optionItem.remove();
     }
   }
 });
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', () => {
-  loadGroups();
-});
-
+/** @type {(e: SubmitEvent) => Promise<void>} */
 // Form submission handler
-document.getElementById('createFormForm').addEventListener('submit', async (e) => {
+async function handleFormSubmit(e) {
   e.preventDefault();
   
-  // Gather all question data
+  const user = auth.currentUser;
+  if (!user) {
+    showAuthAlert();
+    return;
+  }
+
+  const formTitle = document.getElementById('formTitle').value;
+  const formDescription = document.getElementById('formDescription').value;
+  const dueDate = document.getElementById('dueDate').value;
+
+  if (!formTitle || questions.length === 0 || !dueDate) {
+    alert('Please complete all required fields including at least one question.');
+    return;
+  }
+
+  // Gather question data
   const formQuestions = [];
   document.querySelectorAll('.question-card').forEach(card => {
     const id = card.dataset.id;
@@ -274,17 +336,17 @@ document.getElementById('createFormForm').addEventListener('submit', async (e) =
   });
 
   try {
-  const formData = {
-  title: document.getElementById('formTitle').value,
-  description: document.getElementById('formDescription').value,
-  dueDate: Timestamp.fromDate(new Date(document.getElementById('dueDate').value)),
-  type: currentFormType,
-  createdBy: auth.currentUser.uid,
-  creatorName: auth.currentUser.displayName || auth.currentUser.email || 'Anonymous',
-  createdAt: Timestamp.now(),
-  questions: formQuestions,
-  group: currentFormType === 'private' ? document.getElementById('group').value : null
-  };
+    const formData = {
+      title: formTitle,
+      description: formDescription,
+      dueDate: Timestamp.fromDate(new Date(dueDate)),
+      type: currentFormType,
+      createdBy: auth.currentUser.uid,
+      creatorName: auth.currentUser.displayName || auth.currentUser.email || 'Anonymous',
+      createdAt: Timestamp.now(),
+      questions: formQuestions,
+      group: currentFormType === 'private' ? document.getElementById('group').value : null
+    };
 
     await addDoc(collection(db, 'forms'), formData);
     window.location.href = 'forms.html';
@@ -292,9 +354,55 @@ document.getElementById('createFormForm').addEventListener('submit', async (e) =
     console.error('Error creating form:', error);
     alert('Error creating form: ' + error.message);
   }
-});
+}
 
-if (!formData.title || formQuestions.length === 0 || !formData.dueDate) {
-  alert('Please complete all required fields including at least one question.');
-  return;
+// Update your loadGroups function to check auth state
+async function loadGroups() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const groupSelect = document.getElementById('group');
+  if (!groupSelect) return;
+
+  try {
+    const querySnapshot = await getDocs(collection(db, 'groups'));
+    querySnapshot.forEach((doc) => {
+      const group = doc.data();
+      const option = document.createElement('option');
+      option.value = doc.id;
+      option.textContent = group.name;
+      groupSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading groups:", error);
+  }
+}
+
+// Add this function after your other functions
+function addNewOption(optionsList, questionId, optionNumber) {
+  const type = optionsList.closest('.question-card').dataset.type;
+  const newOption = document.createElement('div');
+  newOption.className = 'option-item';
+  
+  if (type === 'Multiple Choice') {
+    newOption.innerHTML = `
+      <input type="text" placeholder="Option ${optionNumber}" required>
+      <input type="radio" name="correct-${questionId}" class="correct-option" style="width: 20px; height: 20px; margin: 0 10px;">
+      <label style="color: #FFD600; margin-right: 10px;">Correct</label>
+      <button type="button" class="remove-option-btn">Remove</button>
+    `;
+  } else if (type === 'Checkboxes') {
+    newOption.innerHTML = `
+      <input type="text" placeholder="Option ${optionNumber}" required>
+      <input type="checkbox" class="checkbox-option" style="width: 20px; height: 20px; margin: 0 10px;">
+      <button type="button" class="remove-option-btn">Remove</button>
+    `;
+  } else {
+    newOption.innerHTML = `
+      <input type="text" placeholder="Option ${optionNumber}" required>
+      <button type="button" class="remove-option-btn">Remove</button>
+    `;
+  }
+  
+  optionsList.insertBefore(newOption, optionsList.querySelector('.add-option-btn'));
 }
