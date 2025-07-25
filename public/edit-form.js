@@ -263,7 +263,7 @@ function addQuestion(type, existingQuestion = null) {
   questionDiv.innerHTML = `
     <div class="question-header">
       <input type="text" class="question-title-input" placeholder="Question" 
-        value="${questionData.question}" required>
+        value="${(questionData.question || '').replace(/"/g, '&quot;')}" required>
       <div class="question-controls">
         <label class="required-toggle">
           <input type="checkbox" ${questionData.required ? 'checked' : ''}>
@@ -302,7 +302,7 @@ function generateQuestionInputs(type, data) {
         <div class="options-container">
           ${(data.options || ['Option 1']).map(option => `
             <div class="option-row">
-              <input type="text" class="option-input" value="${option}">
+              <input type="text" class="option-input" value="${option.replace(/"/g, '&quot;')}">
               <button type="button" class="delete-option-btn">Delete</button>
             </div>
           `).join('')}
@@ -318,8 +318,8 @@ function generateQuestionInputs(type, data) {
             <label>Max: <input type="number" class="scale-max" value="${scale.max}"></label>
           </div>
           <div class="scale-labels">
-            <label>Min Label: <input type="text" class="scale-min-label" value="${scale.minLabel}"></label>
-            <label>Max Label: <input type="text" class="scale-max-label" value="${scale.maxLabel}"></label>
+            <label>Min Label: <input type="text" class="scale-min-label" value="${(scale.minLabel || '').replace(/"/g, '&quot;')}"></label>
+            <label>Max Label: <input type="text" class="scale-max-label" value="${(scale.maxLabel || '').replace(/"/g, '&quot;')}"></label>
           </div>
         </div>
       `;
