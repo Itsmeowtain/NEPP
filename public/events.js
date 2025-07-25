@@ -1,0 +1,468 @@
+import EventsService from './services/events-service.js';
+import GroupsService from './services/groups-service.js';
+import AuthService from './services/auth-service.js';
+
+class EventsManager {
+    constructor() {
+        this.currentUser = null;
+        this.userGroups = [];
+        this.events = [];
+        this.filteredEvents = [];
+        this.currentView = 'list';
+        
+        this.initializeElements();
+        this.bindEvents();
+        this.checkAuthentication();
+    }
+
+    initializeElements() {
+        // Header elements
+        this.createEventBtn = document.getElementById('createEventBtn');
+        
+        // Control elements
+        this.viewButtons = document.querySelectorAll('.view-btn');
+        this.groupFilter = document.getElementById('groupFilter');
+        this.timeFilter = document.getElementById('timeFilter');
+        this.searchInput = document.getElementById('eventsSearch');
+        
+        // View elements
+        this.eventsListView = document.getElementById('eventsListView');
+        this.eventsCalendarView = document.getElementById('eventsCalendarView');
+        this.eventsList = document.getElementById('eventsList');
+        this.eventsCalendar = document.getElementById('eventsCalendar');
+        
+        // Sidebar elements
+        this.miniCalendar = document.getElementById('miniCalendar');
+        this.upcomingEventsList = document.getElementById('upcomingEventsList');
+        
+        // Modal elements
+        this.createEventModal = document.getElementById('createEventModal');
+        this.createEventForm = document.getElementById('createEventForm');
+        this.cancelCreateEventBtn = document.getElementById('cancelCreateEvent');
+        
+        this.eventDetailsModal = document.getElementById('eventDetailsModal');
+        this.eventDetailsContainer = document.getElementById('eventDetailsContainer');
+        this.closeEventDetailsBtn = document.getElementById('closeEventDetails');
+    }
+
+    bindEvents() {
+        // Create event button
+        this.createEventBtn.addEventListener('click', () => {
+            this.showCreateEventModal();
+        });
+
+        // View switching
+        this.viewButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                this.switchView(button.dataset.view);
+            });
+        });
+
+        // Filter and search
+        this.groupFilter.addEventListener('change', () => {
+            this.filterEvents();
+        });
+
+        this.timeFilter.addEventListener('change', () => {
+            this.filterEvents();
+        });
+
+        this.searchInput.addEventListener('input', () => {
+            this.filterEvents();
+        });
+
+        // Create event form
+        this.createEventForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleCreateEvent();
+        });
+
+        this.cancelCreateEventBtn.addEventListener('click', () => {
+            this.hideCreateEventModal();
+        });
+
+        // Event details modal
+        this.closeEventDetailsBtn.addEventListener('click', () => {
+            this.hideEventDetailsModal();
+        });
+
+        // Close modals when clicking outside
+        this.createEventModal.addEventListener('click', (e) => {
+            if (e.target === this.createEventModal) {
+                this.hideCreateEventModal();
+            }
+        });
+
+        this.eventDetailsModal.addEventListener('click', (e) => {
+            if (e.target === this.eventDetailsModal) {
+                this.hideEventDetailsModal();
+            }
+        });
+    }
+
+    async checkAuthentication() {
+        try {
+            this.currentUser = await AuthService.getCurrentUser();
+            if (!this.currentUser) {
+                this.showAuthAlert();
+                return;
+            }
+            
+            // Update sidebar with user info
+            this.updateSidebarUser();
+            
+            // Load user groups and events
+            await this.loadData();
+        } catch (error) {
+            console.error('Authentication error:', error);
+            this.showAuthAlert();
+        }
+    }
+
+    updateSidebarUser() {
+        const userNameElement = document.getElementById('sidebar-user-name');
+        if (userNameElement && this.currentUser) {
+            userNameElement.textContent = this.currentUser.email || 'NEPP User';
+        }
+    }
+
+    showAuthAlert() {
+        alert('Please log in to access events.');
+        window.location.href = 'login.html';
+    }
+
+    async loadData() {
+        try {
+            // Load user groups first
+            this.userGroups = await GroupsService.getUserGroups(this.currentUser.uid);
+            
+            // Populate group filter
+            this.populateGroupFilter();
+            
+            // Load events
+            const userGroupIds = this.userGroups.map(group => group.id);
+            this.events = await EventsService.getUserEvents(this.currentUser.uid, userGroupIds);
+            this.filteredEvents = [...this.events];
+            
+            // Render events
+            this.renderEvents();
+            this.renderUpcomingEvents();
+            this.renderMiniCalendar();
+        } catch (error) {
+            console.error('Error loading data:', error);
+            this.showError('Failed to load events');
+        }
+    }
+
+    populateGroupFilter() {
+        // Clear existing options except "All Groups"
+        this.groupFilter.innerHTML = '<option value="">All Groups</option>';
+        
+        // Add user groups
+        this.userGroups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            this.groupFilter.appendChild(option);
+        });
+    }
+
+    switchView(view) {
+        this.currentView = view;
+        
+        // Update view buttons
+        this.viewButtons.forEach(button => {
+            button.classList.toggle('active', button.dataset.view === view);
+        });
+        
+        // Update view content
+        this.eventsListView.classList.toggle('active', view === 'list');
+        this.eventsCalendarView.classList.toggle('active', view === 'calendar');
+        
+        if (view === 'calendar') {
+            this.renderCalendarView();
+        }
+    }
+
+    filterEvents() {
+        let filtered = [...this.events];
+        
+        // Apply group filter
+        const groupId = this.groupFilter.value;
+        if (groupId) {
+            filtered = EventsService.filterEventsByGroup(filtered, groupId);
+        }
+        
+        // Apply time filter
+        const timeFilter = this.timeFilter.value;
+        filtered = EventsService.filterEventsByTime(filtered, timeFilter);
+        
+        // Apply search filter
+        const searchTerm = this.searchInput.value;
+        filtered = EventsService.searchEvents(filtered, searchTerm);
+        
+        this.filteredEvents = filtered;
+        this.renderEvents();
+    }
+
+    renderEvents() {
+        if (this.filteredEvents.length === 0) {
+            this.renderEmptyState();
+            return;
+        }
+
+        this.eventsList.innerHTML = this.filteredEvents.map(event => {
+            const group = this.userGroups.find(g => g.id === event.groupId);
+            const isCreator = event.createdBy === this.currentUser.uid;
+            
+            return `
+                <div class="event-card" onclick="eventsManager.showEventDetails('${event.id}')">
+                    <div class="event-header">
+                        <h3 class="event-title">${event.title}</h3>
+                        <div class="event-time">
+                            ${EventsService.formatDate(event.date)} at ${EventsService.formatTime(event.time)}
+                        </div>
+                    </div>
+                    ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
+                    <div class="event-meta">
+                        <div class="event-details">
+                            ${event.location ? `
+                                <div class="event-location">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                    </svg>
+                                    ${event.location}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="event-badges">
+                            ${group ? `<span class="event-group">${group.name}</span>` : ''}
+                            <span class="event-visibility ${event.visibility}">${event.visibility}</span>
+                            ${isCreator ? '<span class="event-creator">Created by you</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    renderEmptyState() {
+        this.eventsList.innerHTML = `
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+                <h3>No events found</h3>
+                <p>Create an event or adjust your filters to see events.</p>
+            </div>
+        `;
+    }
+
+    renderUpcomingEvents() {
+        const upcomingEvents = EventsService.getUpcomingEvents(this.events, 5);
+        
+        if (upcomingEvents.length === 0) {
+            this.upcomingEventsList.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No upcoming events</p>';
+            return;
+        }
+
+        this.upcomingEventsList.innerHTML = upcomingEvents.map(event => `
+            <div class="upcoming-event-item" onclick="eventsManager.showEventDetails('${event.id}')">
+                <div class="upcoming-event-date">
+                    ${new Date(event.date).getDate()}
+                </div>
+                <div class="upcoming-event-info">
+                    <div class="upcoming-event-title">${event.title}</div>
+                    <div class="upcoming-event-time">${EventsService.formatTime(event.time)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    renderMiniCalendar() {
+        // Simple mini calendar - you can enhance this
+        const now = new Date();
+        const monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        
+        this.miniCalendar.innerHTML = `
+            <h3>${monthName}</h3>
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+                Click on calendar view for full calendar
+            </div>
+        `;
+    }
+
+    renderCalendarView() {
+        // Simple calendar view placeholder
+        this.eventsCalendar.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <h3>Calendar View</h3>
+                <p>Calendar view implementation coming soon...</p>
+                <p>For now, use the list view to see all events.</p>
+            </div>
+        `;
+    }
+
+    showCreateEventModal() {
+        this.createEventForm.reset();
+        
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('eventDate').value = today;
+        
+        // Populate group dropdown
+        this.populateEventGroupSelect();
+        
+        this.createEventModal.style.display = 'flex';
+    }
+
+    hideCreateEventModal() {
+        this.createEventModal.style.display = 'none';
+    }
+
+    populateEventGroupSelect() {
+        const eventGroupSelect = document.getElementById('eventGroup');
+        eventGroupSelect.innerHTML = '<option value="">Personal Event</option>';
+        
+        this.userGroups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            eventGroupSelect.appendChild(option);
+        });
+    }
+
+    async handleCreateEvent() {
+        try {
+            const formData = new FormData(this.createEventForm);
+            const eventData = {
+                title: formData.get('eventTitle').trim(),
+                description: formData.get('eventDescription').trim(),
+                date: formData.get('eventDate'),
+                time: formData.get('eventTime'),
+                location: formData.get('eventLocation').trim(),
+                groupId: formData.get('eventGroup') || null,
+                visibility: formData.get('eventVisibility')
+            };
+
+            // Validate event data
+            EventsService.validateEventData(eventData);
+
+            // Create the event
+            await EventsService.createEvent(eventData, this.currentUser.uid);
+
+            this.hideCreateEventModal();
+            this.showSuccess('Event created successfully');
+            
+            // Reload events
+            await this.loadData();
+        } catch (error) {
+            console.error('Error creating event:', error);
+            this.showError(error.message);
+        }
+    }
+
+    async showEventDetails(eventId) {
+        try {
+            const event = await EventsService.getEventDetails(eventId);
+            const group = this.userGroups.find(g => g.id === event.groupId);
+            const isCreator = event.createdBy === this.currentUser.uid;
+            
+            this.eventDetailsContainer.innerHTML = `
+                <div class="event-details-header">
+                    <h2>${event.title}</h2>
+                    <div class="event-details-meta">
+                        <span class="event-visibility ${event.visibility}">${event.visibility}</span>
+                        ${group ? `<span class="event-group">${group.name}</span>` : ''}
+                        ${isCreator ? '<span class="event-creator">Created by you</span>' : ''}
+                    </div>
+                </div>
+                
+                <div class="event-details-info">
+                    <div class="event-detail-item">
+                        <strong>Date:</strong> ${EventsService.formatDate(event.date)}
+                    </div>
+                    <div class="event-detail-item">
+                        <strong>Time:</strong> ${EventsService.formatTime(event.time)}
+                    </div>
+                    ${event.location ? `
+                        <div class="event-detail-item">
+                            <strong>Location:</strong> ${event.location}
+                        </div>
+                    ` : ''}
+                    ${event.description ? `
+                        <div class="event-detail-item">
+                            <strong>Description:</strong>
+                            <p style="margin-top: 0.5rem;">${event.description}</p>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                ${isCreator ? `
+                    <div class="event-actions" style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="submit-btn" onclick="eventsManager.editEvent('${event.id}')">Edit Event</button>
+                        <button class="cancel-btn" onclick="eventsManager.deleteEvent('${event.id}')">Delete Event</button>
+                    </div>
+                ` : ''}
+            `;
+            
+            this.eventDetailsModal.style.display = 'flex';
+        } catch (error) {
+            console.error('Error loading event details:', error);
+            this.showError('Failed to load event details');
+        }
+    }
+
+    hideEventDetailsModal() {
+        this.eventDetailsModal.style.display = 'none';
+    }
+
+    showSuccess(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    showError(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+}
+
+// Initialize the events manager
+const eventsManager = new EventsManager();
+
+// Make it globally available for inline event handlers
+window.eventsManager = eventsManager;
