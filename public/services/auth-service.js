@@ -15,7 +15,7 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-export const AuthService = {
+const AuthService = {
   async login(email, password) {
     return await signInWithEmailAndPassword(auth, email, password);
   },
@@ -42,8 +42,18 @@ export const AuthService = {
 
   async getCurrentUser() {
     if (!auth.currentUser) return null;
-    const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-    return userDoc.data();
+    
+    return new Promise((resolve) => {
+      if (auth.currentUser) {
+        resolve({
+          uid: auth.currentUser.uid,
+          email: auth.currentUser.email,
+          displayName: auth.currentUser.displayName
+        });
+      } else {
+        resolve(null);
+      }
+    });
   },
 
   // Search users by name or email (for user targeting)
@@ -65,3 +75,5 @@ export const AuthService = {
     return users;
   }
 };
+
+export default AuthService;
