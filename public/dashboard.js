@@ -60,10 +60,11 @@ async function loadAnnouncements() {
 async function loadForms() {
     try {
         console.log('Loading forms...');
+        // Try to load forms, but handle the case where user might not have any forms yet
+        const formsRef = collection(db, "forms");
         const q = query(
-            collection(db, "forms"), 
+            formsRef,
             where("authorId", "==", currentUser.uid),
-            orderBy("createdAt", "desc"),
             limit(3)
         );
         const querySnapshot = await getDocs(q);
@@ -75,6 +76,8 @@ async function loadForms() {
         displayForms(forms);
     } catch (error) {
         console.error('Error loading forms:', error);
+        // Show empty state if there's an error
+        displayForms([]);
     }
 }
 
@@ -151,16 +154,31 @@ function displayForms(forms) {
 
 function initializeCalendar() {
     const calendarWidget = document.getElementById('calendarWidget');
-    if (!calendarWidget) return;
+    if (!calendarWidget) {
+        console.warn('Calendar widget container not found');
+        return;
+    }
 
     // Import and initialize the calendar widget
     import('./components/calendar-widget.js').then(module => {
-        calendar = new module.CalendarWidget(calendarWidget);
-        loadCalendarData();
+        try {
+            // Pass the ID string, not the element itself
+            calendar = new module.CalendarWidget('calendarWidget');
+            loadCalendarData();
+        } catch (widgetError) {
+            console.error('Error initializing calendar widget:', widgetError);
+            calendarWidget.innerHTML = `
+                <div class="calendar-fallback">
+                    <h3>Calendar</h3>
+                    <p>Calendar widget temporarily unavailable</p>
+                </div>
+            `;
+        }
     }).catch(error => {
         console.error('Error loading calendar widget:', error);
         calendarWidget.innerHTML = `
-            <div class="calendar-error">
+            <div class="calendar-fallback">
+                <h3>Calendar</h3>
                 <p>Unable to load calendar</p>
             </div>
         `;
@@ -172,8 +190,9 @@ async function loadCalendarData() {
 
     try {
         // Load forms with due dates
+        const formsRef = collection(db, "forms");
         const q = query(
-            collection(db, "forms"), 
+            formsRef,
             where("authorId", "==", currentUser.uid)
         );
         const querySnapshot = await getDocs(q);
@@ -182,18 +201,24 @@ async function loadCalendarData() {
         querySnapshot.forEach(doc => {
             const form = doc.data();
             if (form.dueDate) {
-                calendar.addForm(form.dueDate.toDate(), {
-                    id: doc.id,
-                    title: form.title,
-                    type: 'form-due'
-                });
+                try {
+                    calendar.addForm(form.dueDate.toDate(), {
+                        id: doc.id,
+                        title: form.title,
+                        type: 'form-due'
+                    });
+                } catch (addError) {
+                    console.warn('Error adding form to calendar:', addError);
+                }
             }
         });
 
         // Set up date selection handler
-        calendar.onDateSelect = (date) => {
-            showDateDetails(date);
-        };
+        if (calendar.onDateSelect) {
+            calendar.onDateSelect = (date) => {
+                showDateDetails(date);
+            };
+        }
 
     } catch (error) {
         console.error('Error loading calendar data:', error);
