@@ -40,7 +40,7 @@ async function loadForms() {
     const q = query(
       formsRef,
       where("createdBy", "==", auth.currentUser.uid),
-      limit(3)
+      limit(5)
     );
     const querySnapshot = await getDocs(q);
     const forms = [];
@@ -64,6 +64,12 @@ async function loadForms() {
 
     if (forms.length === 0) {
       container.innerHTML = '<div class="empty-state">No forms created yet. <a href="create-form.html">Create your first form</a></div>';
+      // Set layout for empty state
+      const dashboardSections = document.querySelector('.dashboard-sections');
+      if (dashboardSections) {
+        dashboardSections.classList.remove('has-many-forms', 'has-few-forms');
+        dashboardSections.classList.add('has-few-forms');
+      }
       return;
     }
 
@@ -86,6 +92,17 @@ async function loadForms() {
         </div>
       </div>
     `).join('');
+
+    // Update dashboard layout based on number of forms
+    const dashboardSections = document.querySelector('.dashboard-sections');
+    if (dashboardSections) {
+      dashboardSections.classList.remove('has-many-forms', 'has-few-forms');
+      if (forms.length >= 3) {
+        dashboardSections.classList.add('has-many-forms');
+      } else {
+        dashboardSections.classList.add('has-few-forms');
+      }
+    }
   } catch (error) {
     console.error('Error loading forms:', error);
     const container = document.getElementById('formsList');

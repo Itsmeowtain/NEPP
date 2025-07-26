@@ -36,6 +36,24 @@ auth.onAuthStateChanged((user) => {
   loadBookmarkedForms(); // Add this line
 });
 
+// Display user info in sidebar
+function displayUserInfo() {
+  if (auth.currentUser) {
+    const userEmail = auth.currentUser.email;
+    const displayName = auth.currentUser.displayName || userEmail.split('@')[0];
+    const initial = displayName.charAt(0).toUpperCase();
+
+    // Update sidebar elements if they exist
+    const userNameElement = document.getElementById('userName');
+    const userEmailElement = document.getElementById('userEmail');
+    const userInitialElement = document.getElementById('userInitial');
+
+    if (userNameElement) userNameElement.textContent = displayName;
+    if (userEmailElement) userEmailElement.textContent = userEmail;
+    if (userInitialElement) userInitialElement.textContent = initial;
+  }
+}
+
 // Separate public forms loading
 async function loadPublicForms() {
   try {

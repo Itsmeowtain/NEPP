@@ -7,7 +7,7 @@
 }
 
 .resources-header h1 {
-    color: var(--text-white);
+    color: #ccd6f6;
     font-size: 2rem;
     font-weight: 600;
 }
@@ -25,11 +25,11 @@
 }
 
 .search-input {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    background: #1a2438;
+    border: 1px solid #374a6b;
     border-radius: 8px;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
-    color: var(--text-white);
+    color: #ccd6f6;
     font-size: 0.875rem;
     width: 300px;
     transition: border-color 0.2s ease;
@@ -37,11 +37,11 @@
 
 .search-input:focus {
     outline: none;
-    border-color: var(--accent-color);
+    border-color: #ffd600;
 }
 
 .search-input::placeholder {
-    color: var(--text-muted);
+    color: #8892b0;
 }
 
 .search-icon {
@@ -49,13 +49,13 @@
     left: 0.75rem;
     width: 1rem;
     height: 1rem;
-    color: var(--text-muted);
+    color: #8892b0;
     pointer-events: none;
 }
 
 .upload-btn {
-    background: var(--accent-color);
-    color: var(--bg-primary);
+    background: #ffd600;
+    color: #0a0f1a;
     border: none;
     border-radius: 8px;
     padding: 0.75rem 1.5rem;
@@ -77,14 +77,14 @@
 }
 
 .resources-container {
-    background: var(--bg-secondary);
+    background: #1a2438;
     border-radius: 12px;
     padding: 2rem;
     min-height: 60vh;
 }
 
 .drop-zone {
-    border: 2px dashed var(--border-color);
+    border: 2px dashed #374a6b;
     border-radius: 12px;
     padding: 3rem;
     text-align: center;
@@ -95,7 +95,7 @@
 
 .drop-zone:hover,
 .drop-zone.drag-over {
-    border-color: var(--accent-color);
+    border-color: #ffd600;
     background: rgba(255, 214, 0, 0.05);
 }
 
@@ -109,24 +109,24 @@
 .drop-zone-icon {
     width: 3rem;
     height: 3rem;
-    color: var(--text-muted);
+    color: #8892b0;
     transition: color 0.3s ease;
 }
 
 .drop-zone:hover .drop-zone-icon,
 .drop-zone.drag-over .drop-zone-icon {
-    color: var(--accent-color);
+    color: #ffd600;
 }
 
 .drop-zone h3 {
-    color: var(--text-white);
+    color: #ccd6f6;
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0;
 }
 
 .drop-zone p {
-    color: var(--text-muted);
+    color: #8892b0;
     margin: 0;
 }
 
@@ -141,8 +141,8 @@
 }
 
 .file-item {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    background: #0a0f1a;
+    border: 1px solid #374a6b;
     border-radius: 8px;
     padding: 1rem;
     cursor: pointer;
@@ -151,7 +151,7 @@
 }
 
 .file-item:hover {
-    border-color: var(--accent-color);
+    border-color: #ffd600;
     transform: translateY(-2px);
 }
 
@@ -182,10 +182,10 @@
 .file-icon.audio { background: #FF9800; }
 .file-icon.archive { background: #795548; }
 .file-icon.code { background: #607D8B; }
-.file-icon.other { background: var(--text-muted); }
+.file-icon.other { background: #8892b0; }
 
 .file-name {
-    color: var(--text-white);
+    color: #ccd6f6;
     font-weight: 500;
     font-size: 0.875rem;
     flex: 1;
@@ -198,7 +198,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: var(--text-muted);
+    color: #8892b0;
     font-size: 0.75rem;
 }
 
@@ -225,18 +225,18 @@
 }
 
 .file-action-btn {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    background: #1a2438;
+    border: 1px solid #374a6b;
     border-radius: 4px;
     padding: 0.25rem;
     cursor: pointer;
-    color: var(--text-muted);
+    color: #8892b0;
     transition: all 0.2s ease;
 }
 
 .file-action-btn:hover {
-    color: var(--text-white);
-    border-color: var(--accent-color);
+    color: #ccd6f6;
+    border-color: #ffd600;
 }
 
 .file-action-btn svg {
@@ -247,7 +247,7 @@
 .empty-state {
     text-align: center;
     padding: 3rem;
-    color: var(--text-muted);
+    color: #8892b0;
 }
 
 .empty-state svg {
@@ -260,7 +260,7 @@
 .empty-state h3 {
     font-size: 1.125rem;
     margin-bottom: 0.5rem;
-    color: var(--text-white);
+    color: #ccd6f6;
 }
 
 .empty-state p {
@@ -282,7 +282,7 @@
 }
 
 .modal-content {
-    background: var(--bg-secondary);
+    background: #1a2438;
     border-radius: 12px;
     padding: 2rem;
     max-width: 500px;
@@ -304,7 +304,7 @@
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 0.75rem;
-    background: var(--bg-primary);
+    background: #0a0f1a;
     border-radius: 8px;
 }
 
@@ -313,7 +313,7 @@
 }
 
 .progress-name {
-    color: var(--text-white);
+    color: #ccd6f6;
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.25rem;
@@ -322,27 +322,27 @@
 .progress-bar {
     width: 100%;
     height: 4px;
-    background: var(--border-color);
+    background: #374a6b;
     border-radius: 2px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: var(--accent-color);
+    background: #ffd600;
     transition: width 0.3s ease;
 }
 
 .progress-status {
-    color: var(--text-muted);
+    color: #8892b0;
     font-size: 0.75rem;
     margin-top: 0.25rem;
 }
 
 .cancel-btn {
     background: transparent;
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
+    color: #8892b0;
+    border: 1px solid #374a6b;
     border-radius: 8px;
     padding: 0.75rem 1.5rem;
     cursor: pointer;
@@ -350,8 +350,8 @@
 }
 
 .cancel-btn:hover {
-    color: var(--text-white);
-    border-color: var(--accent-color);
+    color: #ccd6f6;
+    border-color: #ffd600;
 }
 
 .preview-modal .modal-content {
@@ -368,12 +368,12 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: var(--bg-primary);
+    background: #0a0f1a;
     border: none;
     border-radius: 50%;
     width: 2rem;
     height: 2rem;
-    color: var(--text-white);
+    color: #ccd6f6;
     font-size: 1.25rem;
     cursor: pointer;
     display: flex;
@@ -384,8 +384,8 @@
 }
 
 .close-btn:hover {
-    background: var(--accent-color);
-    color: var(--bg-primary);
+    background: #ffd600;
+    color: #0a0f1a;
 }
 
 #previewContainer {
@@ -414,8 +414,8 @@
 }
 
 #previewContainer pre {
-    background: var(--bg-primary);
-    color: var(--text-white);
+    background: #0a0f1a;
+    color: #ccd6f6;
     padding: 1rem;
     border-radius: 8px;
     overflow: auto;
@@ -457,8 +457,8 @@
 }
 
 .spinner {
-    border: 2px solid var(--border-color);
-    border-top: 2px solid var(--accent-color);
+    border: 2px solid #374a6b;
+    border-top: 2px solid #ffd600;
     border-radius: 50%;
     width: 1rem;
     height: 1rem;
