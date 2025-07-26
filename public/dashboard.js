@@ -11,13 +11,6 @@ let calendar = null;
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUser = user;
-    
-    // Set initial layout state to prevent flicker
-    const dashboardSections = document.querySelector('.dashboard-sections');
-    if (dashboardSections) {
-      dashboardSections.classList.add('has-few-forms'); // Default state
-    }
-    
     await loadDashboardData();
     initializeCalendar();
   } else {
@@ -71,12 +64,6 @@ async function loadForms() {
 
     if (forms.length === 0) {
       container.innerHTML = '<div class="empty-state">No forms created yet. <a href="create-form.html">Create your first form</a></div>';
-      // Set layout for empty state
-      const dashboardSections = document.querySelector('.dashboard-sections');
-      if (dashboardSections) {
-        dashboardSections.classList.remove('has-many-forms', 'has-few-forms');
-        dashboardSections.classList.add('has-few-forms');
-      }
       return;
     }
 
@@ -100,19 +87,6 @@ async function loadForms() {
       </div>
     `).join('');
 
-    // Update dashboard layout based on number of forms
-    const dashboardSections = document.querySelector('.dashboard-sections');
-    if (dashboardSections) {
-      // Use setTimeout to ensure DOM is fully rendered
-      setTimeout(() => {
-        dashboardSections.classList.remove('has-many-forms', 'has-few-forms');
-        if (forms.length >= 3) {
-          dashboardSections.classList.add('has-many-forms');
-        } else {
-          dashboardSections.classList.add('has-few-forms');
-        }
-      }, 50);
-    }
   } catch (error) {
     console.error('Error loading forms:', error);
     const container = document.getElementById('formsList');

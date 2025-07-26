@@ -299,8 +299,9 @@ async function loadBookmarkedForms() {
 
   try {
     // Get user's bookmarks
-    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    const bookmarkedFormIds = userDoc.exists ? (userDoc.data().bookmarkedForms || []) : [];
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+    const bookmarkedFormIds = userDoc.exists() ? (userDoc.data().bookmarkedForms || []) : [];
 
     if (bookmarkedFormIds.length === 0) {
       container.innerHTML = '<p>No bookmarked forms yet.</p>';
@@ -309,16 +310,16 @@ async function loadBookmarkedForms() {
 
     // Get bookmarked forms
     const formsPromises = bookmarkedFormIds.map(formId => 
-      db.collection('forms').doc(formId).get()
+      getDoc(doc(db, 'forms', formId))
     );
     
     const formDocs = await Promise.all(formsPromises);
     
     container.innerHTML = '';
     
-    formDocs.forEach(doc => {
-      if (doc.exists) {
-        const form = doc.data();
+    formDocs.forEach(docSnap => {
+      if (docSnap.exists()) {
+        const form = docSnap.data();
         const formDate = form.createdAt.toDate().toLocaleDateString();
         const dueDate = form.dueDate ? form.dueDate.toDate().toLocaleDateString() : 'No due date';
 
@@ -335,8 +336,8 @@ async function loadBookmarkedForms() {
             <span class="creator-name">By: ${form.creatorName || 'Unknown'}</span>
           </div>
           <div class="form-actions">
-            <button class="view-form-btn" data-form-id="${doc.id}">View Form</button>
-            <button class="remove-bookmark-btn" data-form-id="${doc.id}">
+            <button class="view-form-btn" data-form-id="${docSnap.id}">View Form</button>
+            <button class="remove-bookmark-btn" data-form-id="${docSnap.id}">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
               </svg>
