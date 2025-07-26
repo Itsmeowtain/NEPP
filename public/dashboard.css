@@ -327,14 +327,25 @@ body {
 .author .avatar {
   width: 30px; height: 30px; border-radius: 50%; background: #333; margin-right: 10px;
 }
+
 .calendar-widget {
   background: #14213d;
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.5rem 1rem 1rem 1rem;
+  border-radius: 12px;
   margin-top: 8px;
   color: #fff;
-  min-height: 300px;
-  border: 1px solid rgba(255, 214, 0, 0.1);
+  min-height: 320px;
+  border: 2px solid #FFD60033;
+  box-shadow: 0 2px 12px #0003;
+  position: relative;
+}
+
+.calendar-empty-message {
+  color: #FFD600;
+  font-size: 1.05rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  font-weight: 500;
 }
 
 .calendar-fallback {
