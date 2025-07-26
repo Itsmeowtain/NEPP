@@ -8,14 +8,14 @@ import {
     where, 
     orderBy,
     serverTimestamp 
-} from 'firebase/firestore';
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { 
     ref, 
     uploadBytes, 
     getDownloadURL, 
     deleteObject,
     getMetadata 
-} from 'firebase/storage';
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 import { db, storage } from '../config/firebase-config.js';
 
 class ResourcesService {
