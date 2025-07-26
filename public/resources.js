@@ -29,45 +29,64 @@ class ResourcesManager {
         this.previewModal = document.getElementById('previewModal');
         this.previewContainer = document.getElementById('previewContainer');
         this.closePreviewBtn = document.getElementById('closePreview');
+
+        // Debug: Check if elements exist
+        if (!this.dropZone) {
+            console.error('Drop zone element not found');
+        }
+        if (!this.uploadBtn) {
+            console.error('Upload button not found');
+        }
+        if (!this.fileInput) {
+            console.error('File input not found');
+        }
     }
 
     bindEvents() {
         // Search functionality
-        this.searchInput.addEventListener('input', (e) => {
-            this.filterFiles(e.target.value);
-        });
+        if (this.searchInput) {
+            this.searchInput.addEventListener('input', (e) => {
+                this.filterFiles(e.target.value);
+            });
+        }
 
         // Upload button
-        this.uploadBtn.addEventListener('click', () => {
-            this.fileInput.click();
-        });
+        if (this.uploadBtn) {
+            this.uploadBtn.addEventListener('click', () => {
+                this.fileInput.click();
+            });
+        }
 
         // File input
-        this.fileInput.addEventListener('change', (e) => {
-            this.handleFileSelection(Array.from(e.target.files));
-        });
+        if (this.fileInput) {
+            this.fileInput.addEventListener('change', (e) => {
+                this.handleFileSelection(Array.from(e.target.files));
+            });
+        }
 
         // Drag and drop
-        this.dropZone.addEventListener('click', () => {
-            this.fileInput.click();
-        });
+        if (this.dropZone) {
+            this.dropZone.addEventListener('click', () => {
+                this.fileInput.click();
+            });
 
-        this.dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            this.dropZone.classList.add('drag-over');
-        });
+            this.dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                this.dropZone.classList.add('drag-over');
+            });
 
-        this.dropZone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            this.dropZone.classList.remove('drag-over');
-        });
+            this.dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                this.dropZone.classList.remove('drag-over');
+            });
 
-        this.dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            this.dropZone.classList.remove('drag-over');
-            const files = Array.from(e.dataTransfer.files);
-            this.handleFileSelection(files);
-        });
+            this.dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                this.dropZone.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files);
+                this.handleFileSelection(files);
+            });
+        }
 
         // Modal events
         this.cancelUploadBtn.addEventListener('click', () => {
@@ -420,8 +439,10 @@ class ResourcesManager {
     }
 }
 
-// Initialize the resources manager
-const resourcesManager = new ResourcesManager();
-
-// Make it globally available for inline event handlers
-window.resourcesManager = resourcesManager;
+// Initialize the resources manager when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const resourcesManager = new ResourcesManager();
+    
+    // Make it globally available for inline event handlers
+    window.resourcesManager = resourcesManager;
+});
