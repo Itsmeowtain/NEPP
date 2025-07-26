@@ -1,6 +1,7 @@
 import { auth, db } from '/config/firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { collection, getDocs, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { CalendarWidget } from '/components/calendar-widget.js';
 
 let currentUser = null;
 let calendar = null;
@@ -14,7 +15,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('user-display-name').textContent = displayName;
     
     await loadDashboardData();
-    // initializeCalendar(); // We can enable this when the widget is ready
+    initializeCalendar();
   } else {
     window.location.href = '/login.html';
   }
@@ -148,5 +149,42 @@ function formatDate(date) {
         return 'Yesterday';
     } else {
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+}
+
+function initializeCalendar() {
+    try {
+        calendar = new CalendarWidget('calendarWidget');
+        
+        // Load events into calendar
+        loadUpcomingEvents();
+        
+        // Add event listener for date selection
+        document.getElementById('calendarWidget').addEventListener('dateSelected', (e) => {
+            console.log('Date selected:', e.detail.date);
+        });
+    } catch (error) {
+        console.error('Error initializing calendar:', error);
+    }
+}
+
+async function loadUpcomingEvents() {
+    try {
+        const eventsRef = collection(db, "events");
+        const q = query(eventsRef, orderBy("date", "asc"), limit(10));
+        const querySnapshot = await getDocs(q);
+        
+        querySnapshot.forEach(doc => {
+            const event = doc.data();
+            if (event.date && calendar) {
+                calendar.addEvent(event.date.toDate(), {
+                    title: event.title,
+                    description: event.description,
+                    id: doc.id
+                });
+            }
+        });
+    } catch (error) {
+        console.error('Error loading events for calendar:', error);
     }
 }
