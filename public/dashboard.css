@@ -234,6 +234,7 @@ body {
   padding: 0.5rem 0.25rem;
   font-weight: 600;
 }
+
 .calendar-widget .calendar-grid div {
   aspect-ratio: 1;
   display: flex;
@@ -241,10 +242,14 @@ body {
   justify-content: center;
   cursor: pointer;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #FFD600;
+  background: transparent;
   transition: all 0.2s;
   position: relative;
-  min-height: 28px;
+  min-height: 32px;
+  border: 1px solid rgba(255,255,255,0.04);
 }
 .calendar-widget .calendar-grid div:hover:not(.other-month) {
   background: rgba(255, 214, 0, 0.1);
