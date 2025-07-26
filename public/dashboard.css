@@ -186,7 +186,9 @@ body {
 }
 
 /* Updated Calendar Widget Styles */
-.calendar-container {
+
+/* Scoped Calendar Widget Styles for Dashboard */
+.calendar-widget {
   background: #14213d;
   padding: 1rem;
   border-radius: 8px;
@@ -195,21 +197,18 @@ body {
   min-height: 300px;
   border: 1px solid rgba(255, 214, 0, 0.1);
 }
-
-.calendar-header {
+.calendar-widget .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
-
-#monthYear {
+.calendar-widget #monthYear {
   color: #FFD600;
   font-size: 1.1rem;
   font-weight: 600;
 }
-
-.calendar-nav-btn {
+.calendar-widget .calendar-nav-btn {
   background: none;
   border: none;
   color: #FFD600;
@@ -219,27 +218,23 @@ body {
   border-radius: 4px;
   transition: background 0.2s;
 }
-
-.calendar-nav-btn:hover {
+.calendar-widget .calendar-nav-btn:hover {
   background: rgba(255, 214, 0, 0.1);
 }
-
-.calendar-days-header, .calendar-grid {
+.calendar-widget .calendar-days-header, .calendar-widget .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.25rem;
   text-align: center;
 }
-
-.calendar-days-header span {
+.calendar-widget .calendar-days-header span {
   text-align: center;
   font-size: 0.8rem;
   color: #9ca3af;
   padding: 0.5rem 0.25rem;
   font-weight: 600;
 }
-
-.calendar-grid div {
+.calendar-widget .calendar-grid div {
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -251,28 +246,23 @@ body {
   position: relative;
   min-height: 28px;
 }
-
-.calendar-grid div:hover:not(.other-month) {
+.calendar-widget .calendar-grid div:hover:not(.other-month) {
   background: rgba(255, 214, 0, 0.1);
 }
-
-.calendar-grid .selected {
+.calendar-widget .calendar-grid .selected {
   background: #FFD600;
   color: #0a0f1a;
   font-weight: 600;
 }
-
-.calendar-grid .today {
+.calendar-widget .calendar-grid .today {
   background: rgba(255, 214, 0, 0.2);
   border: 2px solid #FFD600;
 }
-
-.calendar-grid .other-month {
+.calendar-widget .calendar-grid .other-month {
   color: #4a5568;
   cursor: default;
 }
-
-.calendar-grid .has-events::after {
+.calendar-widget .calendar-grid .has-events::after {
   content: '';
   position: absolute;
   bottom: 2px;
