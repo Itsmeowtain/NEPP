@@ -6,6 +6,8 @@ import {
   updateDoc, 
   Timestamp 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { initializeAuth } from '/utils/auth-utils.js';
 
 let currentFormType = 'public';
 let questions = [];
@@ -20,7 +22,65 @@ if (!formId) {
   window.location.href = 'forms.html';
 }
 
-// Show authentication alert dialog
+// Initialize auth and load form data
+initializeAuth().then(async (authResult) => {
+  if (authResult) {
+    await loadFormData();
+    initializeEventListeners();
+  }
+}).catch(error => {
+  console.error('Authentication error:', error);
+  showAuthAlert();
+});
+
+function initializeEventListeners() {
+  // Initialize form submission
+  const form = document.getElementById('editFormForm');
+  if (form) {
+    form.addEventListener('submit', handleFormSubmit);
+  }
+
+  // Initialize cancel button
+  const cancelButton = document.getElementById('cancelForm');
+  if (cancelButton) {
+    cancelButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+        window.location.href = 'forms.html';
+      }
+    });
+  }
+
+  // Initialize question type buttons
+  const questionTypeBtns = document.querySelectorAll('.question-type-btn');
+  questionTypeBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const type = btn.dataset.type;
+      addQuestion(type);
+    });
+  });
+
+  // Initialize form type toggle
+  const publicRadio = document.getElementById('public');
+  const privateRadio = document.getElementById('private');
+  
+  if (publicRadio && privateRadio) {
+    publicRadio.addEventListener('change', () => {
+      if (publicRadio.checked) {
+        currentFormType = 'public';
+        document.getElementById('groupSelector').style.display = 'none';
+      }
+    });
+
+    privateRadio.addEventListener('change', () => {
+      if (privateRadio.checked) {
+        currentFormType = 'private';
+        document.getElementById('groupSelector').style.display = 'block';
+      }
+    });
+  }
+}
 function showAuthAlert() {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
