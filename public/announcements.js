@@ -29,7 +29,7 @@ async function loadAnnouncements() {
 }
 
 function displayAnnouncements(announcements) {
-  const container = document.querySelector('.announcements-list, #announcementsList');
+  const container = document.querySelector('.announcements-list');
   if (!container) {
     console.error('Announcements container not found');
     return;
@@ -37,25 +37,15 @@ function displayAnnouncements(announcements) {
 
   container.innerHTML = announcements.length 
     ? '' 
-    : '<div class="empty-state">No announcements yet.</div>';
+    : '<div style="color:#aaa;">No announcements yet.</div>';
 
   announcements.forEach(announcement => {
     const el = document.createElement('div');
     el.className = 'announcement-item';
     el.innerHTML = `
-      <div class="announcement-header">
-        <span class="announcement-icon">&#128100;</span>
-        <span class="announcement-title">${announcement.title || 'Announcement'}</span>
-      </div>
-      <div class="announcement-content">${announcement.message || announcement.content || ''}</div>
-      <div class="announcement-meta">
-        <span class="announcement-author">
-          <span class="announcement-icon" style="width:28px;height:28px;font-size:1.2rem;">&#128100;</span>
-          ${announcement.author || 'Anonymous'}
-        </span>
-        <span class="announcement-position">${announcement.position || 'Position'}</span>
-        <span class="announcement-time">${announcement.time ? formatTimeAgo(announcement.time.toDate()) : 'Unknown date'}</span>
-      </div>
+      <strong>${announcement.message}</strong><br>
+      <span class="announcement-author">By: ${announcement.author || 'Anonymous'}</span>
+      <span class="announcement-time">${announcement.time ? new Date(announcement.time.toDate()).toLocaleDateString() : 'Unknown date'}</span>
     `;
     container.appendChild(el);
   });
