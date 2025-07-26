@@ -105,7 +105,7 @@ export class CalendarWidget {
       const isToday = date.toDateString() === today.toDateString();
       const hasEvents = this.events.has(dateString) || this.forms.has(dateString);
       
-      let classes = '';
+      let classes = 'calendar-day';
       if (isToday) classes += ' today';
       if (hasEvents) classes += ' has-events';
       

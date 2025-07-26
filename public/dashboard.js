@@ -2,23 +2,21 @@ import { auth, db } from '/config/firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { collection, getDocs, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { CalendarWidget } from '/components/calendar-widget.js';
+import { initializeAuth } from '/utils/auth-utils.js';
 
 let currentUser = null;
 let calendar = null;
 
-// Wait for auth state before trying to load data
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUser = user;
-    const displayName = user.displayName || "NEPP User";
-    document.getElementById('sidebar-user-name').textContent = displayName;
-    document.getElementById('user-display-name').textContent = displayName;
-    
+// Initialize authentication and load dashboard
+initializeAuth().then(async (authResult) => {
+  if (authResult) {
+    currentUser = authResult.user;
     await loadDashboardData();
     initializeCalendar();
-  } else {
-    window.location.href = '/login.html';
   }
+}).catch(error => {
+  console.error('Authentication error:', error);
+  window.location.href = '/login.html';
 });
 
 async function loadDashboardData() {
