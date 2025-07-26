@@ -8,15 +8,14 @@ let currentUser = null;
 let calendar = null;
 
 // Initialize authentication and load dashboard
-initializeAuth().then(async (authResult) => {
-  if (authResult) {
-    currentUser = authResult.user;
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
     await loadDashboardData();
     initializeCalendar();
+  } else {
+    window.location.href = '/login.html';
   }
-}).catch(error => {
-  console.error('Authentication error:', error);
-  window.location.href = '/login.html';
 });
 
 async function loadDashboardData() {
@@ -32,10 +31,15 @@ async function loadDashboardData() {
 
 async function loadForms() {
   try {
+    if (!auth.currentUser) {
+      console.log('No current user, cannot load forms');
+      return;
+    }
+
     const formsRef = collection(db, "forms");
     const q = query(
       formsRef,
-      where("createdBy", "==", currentUser.uid),
+      where("createdBy", "==", auth.currentUser.uid),
       limit(3)
     );
     const querySnapshot = await getDocs(q);
