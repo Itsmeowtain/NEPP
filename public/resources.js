@@ -1,5 +1,7 @@
 import ResourcesService from './services/resources-service.js';
 import AuthService from './services/auth-service.js';
+import { auth } from './config/firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 class ResourcesManager {
     constructor() {
@@ -11,7 +13,7 @@ class ResourcesManager {
         
         this.initializeElements();
         this.bindEvents();
-        this.checkAuthentication();
+        this.setupAuthListener();
     }
 
     initializeElements() {
@@ -111,29 +113,30 @@ class ResourcesManager {
         });
     }
 
-    async checkAuthentication() {
-        try {
-            this.currentUser = await AuthService.getCurrentUser();
-            if (!this.currentUser) {
+    setupAuthListener() {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                this.currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName
+                };
+                
+                // Update sidebar with user info
+                this.updateSidebarUser();
+                
+                // Load user files
+                await this.loadFiles();
+            } else {
                 this.showAuthAlert();
-                return;
             }
-            
-            // Update sidebar with user info
-            this.updateSidebarUser();
-            
-            // Load user files
-            await this.loadFiles();
-        } catch (error) {
-            console.error('Authentication error:', error);
-            this.showAuthAlert();
-        }
+        });
     }
 
     updateSidebarUser() {
         const userNameElement = document.getElementById('sidebar-user-name');
         if (userNameElement && this.currentUser) {
-            userNameElement.textContent = this.currentUser.email || 'NEPP User';
+            userNameElement.textContent = this.currentUser.displayName || this.currentUser.email || 'NEPP User';
         }
     }
 

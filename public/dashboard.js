@@ -11,6 +11,13 @@ let calendar = null;
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUser = user;
+    
+    // Set initial layout state to prevent flicker
+    const dashboardSections = document.querySelector('.dashboard-sections');
+    if (dashboardSections) {
+      dashboardSections.classList.add('has-few-forms'); // Default state
+    }
+    
     await loadDashboardData();
     initializeCalendar();
   } else {
@@ -96,12 +103,15 @@ async function loadForms() {
     // Update dashboard layout based on number of forms
     const dashboardSections = document.querySelector('.dashboard-sections');
     if (dashboardSections) {
-      dashboardSections.classList.remove('has-many-forms', 'has-few-forms');
-      if (forms.length >= 3) {
-        dashboardSections.classList.add('has-many-forms');
-      } else {
-        dashboardSections.classList.add('has-few-forms');
-      }
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        dashboardSections.classList.remove('has-many-forms', 'has-few-forms');
+        if (forms.length >= 3) {
+          dashboardSections.classList.add('has-many-forms');
+        } else {
+          dashboardSections.classList.add('has-few-forms');
+        }
+      }, 50);
     }
   } catch (error) {
     console.error('Error loading forms:', error);

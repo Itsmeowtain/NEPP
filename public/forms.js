@@ -30,10 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Wait for authentication state and then load forms
 auth.onAuthStateChanged((user) => {
   displayUserInfo();
-  loadPublicForms();
-  loadPrivateForms();
-  loadUserForms();
-  loadBookmarkedForms(); // Add this line
+  if (user) {
+    loadForms(); // Use the main loadForms function instead
+    loadBookmarkedForms();
+  }
 });
 
 // Display user info in sidebar
