@@ -81,27 +81,21 @@ export class CalendarWidget {
     let html = `
       <div class="calendar-header">
         <button class="calendar-nav-btn" data-direction="prev">&lt;</button>
-        <h3 class="calendar-month-year">${monthNames[month]} ${year}</h3>
+        <h2 id="monthYear">${monthNames[month]} ${year}</h2>
         <button class="calendar-nav-btn" data-direction="next">&gt;</button>
       </div>
-      <div class="calendar-weekdays">
-        <div class="calendar-weekday">S</div>
-        <div class="calendar-weekday">M</div>
-        <div class="calendar-weekday">T</div>
-        <div class="calendar-weekday">W</div>
-        <div class="calendar-weekday">T</div>
-        <div class="calendar-weekday">F</div>
-        <div class="calendar-weekday">S</div>
+      <div class="calendar-days-header">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
       </div>
-      <div class="calendar-days">
+      <div class="calendar-grid">
     `;
 
     // Previous month's trailing days
-    const prevMonth = new Date(year, month - 1, 0);
+    const prevMonth = new Date(year, month, 0);
     const prevMonthDays = prevMonth.getDate();
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-      const day = prevMonthDays - i;
-      html += `<div class="calendar-day other-month">${day}</div>`;
+    for (let i = startingDayOfWeek; i > 0; i--) {
+      const day = prevMonthDays - i + 1;
+      html += `<div class="other-month">${day}</div>`;
     }
 
     // Current month days
@@ -111,18 +105,18 @@ export class CalendarWidget {
       const isToday = date.toDateString() === today.toDateString();
       const hasEvents = this.events.has(dateString) || this.forms.has(dateString);
       
-      let classes = 'calendar-day';
+      let classes = '';
       if (isToday) classes += ' today';
       if (hasEvents) classes += ' has-events';
       
-      html += `<div class="${classes}">${day}</div>`;
+      html += `<div class="${classes}" data-day="${day}">${day}</div>`;
     }
 
     // Next month's leading days
     const totalCells = Math.ceil((startingDayOfWeek + daysInMonth) / 7) * 7;
     const remainingCells = totalCells - (startingDayOfWeek + daysInMonth);
     for (let day = 1; day <= remainingCells; day++) {
-      html += `<div class="calendar-day other-month">${day}</div>`;
+      html += `<div class="other-month">${day}</div>`;
     }
 
     html += '</div>';
