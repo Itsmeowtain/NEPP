@@ -36,7 +36,6 @@ async function loadForms() {
     const q = query(
       formsRef,
       where("createdBy", "==", currentUser.uid),
-      orderBy("dueDate", "desc"),
       limit(3)
     );
     const querySnapshot = await getDocs(q);
@@ -45,11 +44,22 @@ async function loadForms() {
       forms.push({ id: doc.id, ...doc.data() });
     });
     
+    // Sort forms by dueDate in JavaScript (if available)
+    forms.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return b.dueDate.toDate() - a.dueDate.toDate();
+    });
+    
     const container = document.getElementById('formsList');
-    if (!container) return;
+    if (!container) {
+      console.error('Forms container not found');
+      return;
+    }
 
     if (forms.length === 0) {
-      container.innerHTML = '<div class="empty-state">No forms yet.</div>';
+      container.innerHTML = '<div class="empty-state">No forms created yet. <a href="create-form.html">Create your first form</a></div>';
       return;
     }
 
@@ -66,10 +76,18 @@ async function loadForms() {
           ` : ''}
         </div>
         <p class="form-description">${form.description || 'No description'}</p>
+        <div class="form-actions">
+          <a href="edit-form.html?id=${form.id}" class="edit-form-link">Edit</a>
+          <a href="form-results.html?id=${form.id}" class="view-results-link">Results</a>
+        </div>
       </div>
     `).join('');
   } catch (error) {
     console.error('Error loading forms:', error);
+    const container = document.getElementById('formsList');
+    if (container) {
+      container.innerHTML = '<div class="empty-state error">Error loading forms. Please try again.</div>';
+    }
   }
 }
 

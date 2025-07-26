@@ -81,6 +81,71 @@ function initializeEventListeners() {
     });
   }
 }
+
+async function loadFormData() {
+  try {
+    const formRef = doc(db, 'forms', formId);
+    const formSnap = await getDoc(formRef);
+    
+    if (!formSnap.exists()) {
+      alert('Form not found');
+      window.location.href = 'forms.html';
+      return;
+    }
+
+    const formData = formSnap.data();
+    
+    // Check if user owns this form
+    if (formData.createdBy !== auth.currentUser.uid) {
+      alert('You do not have permission to edit this form');
+      window.location.href = 'forms.html';
+      return;
+    }
+
+    // Populate form fields
+    document.getElementById('formTitle').value = formData.title || '';
+    document.getElementById('formDescription').value = formData.description || '';
+    
+    if (formData.dueDate) {
+      const dueDate = formData.dueDate.toDate();
+      const localDateTime = new Date(dueDate.getTime() - dueDate.getTimezoneOffset() * 60000);
+      document.getElementById('dueDate').value = localDateTime.toISOString().slice(0, 16);
+    }
+
+    // Set form type
+    currentFormType = formData.type || 'public';
+    if (currentFormType === 'private') {
+      const privateRadio = document.getElementById('private');
+      if (privateRadio) {
+        privateRadio.checked = true;
+        document.getElementById('groupSelector').style.display = 'block';
+        if (formData.group) {
+          document.getElementById('group').value = formData.group;
+        }
+      }
+    } else {
+      const publicRadio = document.getElementById('public');
+      if (publicRadio) {
+        publicRadio.checked = true;
+      }
+    }
+
+    // Load questions
+    questions = formData.questions || [];
+    const questionsContainer = document.getElementById('questionsContainer');
+    questionsContainer.innerHTML = '';
+    
+    questions.forEach(questionData => {
+      addQuestion(questionData.type, questionData);
+    });
+
+  } catch (error) {
+    console.error('Error loading form data:', error);
+    alert('Error loading form: ' + error.message);
+    window.location.href = 'forms.html';
+  }
+}
+
 function showAuthAlert() {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -286,24 +351,39 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  updateQuestions();
-
-  const formData = {
-    title: document.getElementById('formTitle').value,
-    description: document.getElementById('formDescription').value,
-    dueDate: Timestamp.fromDate(new Date(document.getElementById('dueDate').value)),
-    type: currentFormType,
-    group: currentFormType === 'private' ? document.getElementById('group').value : null,
-    questions: questions,
-  };
+  // Show loading state
+  const submitBtn = e.target.querySelector('.submit-btn');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Updating...';
+  submitBtn.disabled = true;
 
   try {
+    updateQuestions();
+
+    const formData = {
+      title: document.getElementById('formTitle').value,
+      description: document.getElementById('formDescription').value,
+      dueDate: Timestamp.fromDate(new Date(document.getElementById('dueDate').value)),
+      type: currentFormType,
+      group: currentFormType === 'private' ? document.getElementById('group').value : null,
+      questions: questions,
+      lastModified: Timestamp.now()
+    };
+
     const formRef = doc(db, 'forms', formId);
     await updateDoc(formRef, formData);
+    
+    // Show success message
+    alert('Form updated successfully!');
     window.location.href = 'forms.html';
+    
   } catch (error) {
     console.error('Error updating form:', error);
     alert('Error updating form: ' + error.message);
+    
+    // Reset button
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
   }
 }
 

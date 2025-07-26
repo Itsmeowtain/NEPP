@@ -6,13 +6,18 @@ import {
   where,
   orderBy,
   deleteDoc,
-  doc 
+  doc,
+  setDoc,
+  arrayUnion,
+  arrayRemove,
+  updateDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 // Initialize the page with loading states
 document.addEventListener('DOMContentLoaded', () => {
-  const containers = ['publicFormsList', 'privateFormsList', 'userFormsList'];
+  const containers = ['publicFormsList', 'privateFormsList', 'userFormsList', 'bookmarkedFormsList'];
   containers.forEach(id => {
     const container = document.getElementById(id);
     if (container) {
