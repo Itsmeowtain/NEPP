@@ -64,7 +64,7 @@ async function loadForms() {
         const formsRef = collection(db, "forms");
         const q = query(
             formsRef,
-            where("authorId", "==", currentUser.uid),
+            where("createdBy", "==", currentUser.uid),
             limit(3)
         );
         const querySnapshot = await getDocs(q);
@@ -193,7 +193,7 @@ async function loadCalendarData() {
         const formsRef = collection(db, "forms");
         const q = query(
             formsRef,
-            where("authorId", "==", currentUser.uid)
+            where("createdBy", "==", currentUser.uid)
         );
         const querySnapshot = await getDocs(q);
         
