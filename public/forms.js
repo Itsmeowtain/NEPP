@@ -30,9 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     await loadForms();
+    await loadBookmarkedForms();
   } else {
     // Handle not signed in state
-    const containers = ['privateFormsList', 'userFormsList'];
+    const containers = ['privateFormsList', 'userFormsList', 'bookmarkedFormsList'];
     containers.forEach(id => {
       const container = document.getElementById(id);
       if (container) {
