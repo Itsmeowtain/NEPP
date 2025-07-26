@@ -224,10 +224,11 @@ body {
   background: rgba(255, 214, 0, 0.1);
 }
 .calendar-widget .calendar-days-header, .calendar-widget .calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.25rem;
-  text-align: center;
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 0.25rem;
+text-align: center;
+background: transparent;
 }
 .calendar-widget .calendar-days-header span {
   text-align: center;
