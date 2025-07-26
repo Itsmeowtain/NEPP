@@ -114,7 +114,12 @@ function displayAnnouncements(announcements) {
 
 function displayForms(forms) {
     const formsList = document.getElementById('formsList');
-    if (!formsList) return;
+    if (!formsList) {
+        console.error('FormsList element not found');
+        return;
+    }
+
+    console.log('Displaying forms:', forms); // Debug log
 
     if (forms.length === 0) {
         formsList.innerHTML = `
@@ -159,11 +164,15 @@ function initializeCalendar() {
         return;
     }
 
+    console.log('Initializing calendar widget...'); // Debug log
+
     // Import and initialize the calendar widget
     import('./components/calendar-widget.js').then(module => {
         try {
+            console.log('Calendar module loaded, creating widget...'); // Debug log
             // Pass the ID string, not the element itself
             calendar = new module.CalendarWidget('calendarWidget');
+            console.log('Calendar widget created successfully'); // Debug log
             loadCalendarData();
         } catch (widgetError) {
             console.error('Error initializing calendar widget:', widgetError);
@@ -171,6 +180,7 @@ function initializeCalendar() {
                 <div class="calendar-fallback">
                     <h3>Calendar</h3>
                     <p>Calendar widget temporarily unavailable</p>
+                    <p style="font-size: 0.8rem; color: #9ca3af; margin-top: 1rem;">Error: ${widgetError.message}</p>
                 </div>
             `;
         }
@@ -180,6 +190,7 @@ function initializeCalendar() {
             <div class="calendar-fallback">
                 <h3>Calendar</h3>
                 <p>Unable to load calendar</p>
+                <p style="font-size: 0.8rem; color: #9ca3af; margin-top: 1rem;">Error: ${error.message}</p>
             </div>
         `;
     });
