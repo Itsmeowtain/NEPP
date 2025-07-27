@@ -1,16 +1,10 @@
 import { auth, db } from '/config/firebase-config.js';
 import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { initializeAuth } from '/utils/auth-utils.js';
 
 // Wait for auth state before loading
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const displayName = user.displayName || "NEPP User";
-    document.getElementById('sidebar-user-name').textContent = displayName;
-    loadAnnouncements();
-  } else {
-    window.location.href = '/login.html';
-  }
+initializeAuth().then(async () => {
+  loadAnnouncements();
 });
 
 async function loadAnnouncements() {

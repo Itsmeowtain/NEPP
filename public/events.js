@@ -122,7 +122,7 @@ class EventsManager {
     updateSidebarUser() {
         const userNameElement = document.getElementById('sidebar-user-name');
         if (userNameElement && this.currentUser) {
-            userNameElement.textContent = this.currentUser.email || 'NEPP User';
+            userNameElement.textContent = this.currentUser.displayName || this.currentUser.email?.split('@')[0] || 'NEPP User';
         }
     }
 

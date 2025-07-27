@@ -13,7 +13,7 @@ import {
   updateDoc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { initializeAuth } from '/utils/auth-utils.js';
 
 // Initialize the page with loading states
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,33 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Auth state observer
-// Wait for authentication state and then load forms
-auth.onAuthStateChanged((user) => {
-  displayUserInfo();
-  if (user) {
-    loadForms(); // Use the main loadForms function instead
-    loadBookmarkedForms();
-  }
+// Auth state observer - use centralized auth utility
+initializeAuth().then(() => {
+  loadForms();
+  loadBookmarkedForms();
 });
-
-// Display user info in sidebar
-function displayUserInfo() {
-  if (auth.currentUser) {
-    const userEmail = auth.currentUser.email;
-    const displayName = auth.currentUser.displayName || userEmail.split('@')[0];
-    const initial = displayName.charAt(0).toUpperCase();
-
-    // Update sidebar elements if they exist
-    const userNameElement = document.getElementById('userName');
-    const userEmailElement = document.getElementById('userEmail');
-    const userInitialElement = document.getElementById('userInitial');
-
-    if (userNameElement) userNameElement.textContent = displayName;
-    if (userEmailElement) userEmailElement.textContent = userEmail;
-    if (userInitialElement) userInitialElement.textContent = initial;
-  }
-}
 
 // Separate public forms loading
 async function loadPublicForms() {

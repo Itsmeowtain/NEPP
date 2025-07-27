@@ -16,29 +16,31 @@
   color: #0a0f1a;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .create-form-btn:hover {
   background: #ffe666;
+  transform: translateY(-1px);
 }
 
 .forms-search {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: #1a2438;
+  background: #151f34;
   padding: 0.75rem 1rem;
   border-radius: 8px;
   margin-bottom: 2rem;
-  max-width: 400px; /* Add this line */
+  max-width: 300px;
+  min-height:50px;
 }
 
 .forms-search input {
   flex: 1;
   background: transparent;
   border: none;
-  color: white;
+  color: #ffe666;
   font-size: 1rem;
 }
 
@@ -102,7 +104,7 @@
 
 .form-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .view-form-btn,
@@ -156,11 +158,6 @@
   }
 }
 
-.form-actions {
-  display: flex;
-  gap: 1rem;
-}
-
 .view-results-btn {
   display: flex;
   align-items: center;
@@ -172,11 +169,12 @@
   color: #fff;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .view-results-btn:hover {
   background: #374a6b;
+  transform: translateY(-1px);
 }
 
 .form-select-dialog {

@@ -201,12 +201,6 @@ body {
   box-sizing: border-box;
   background: linear-gradient(145deg, #16283c 0%, #1f3449 100%);
 }
-.forms-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
 
 .create-form-btn {
   background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
@@ -230,6 +224,7 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(255, 214, 0, 0.4);
 }
+
 #formsList {
   display: flex;
   flex-direction: column;
@@ -1188,57 +1183,4 @@ body.light .settings-section {
 
 .footer-links a:hover {
   color: #FFD600;
-}
-
-/* Add these new styles */
-.profile-actions {
-  display: flex;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.auth-btn {
-  background: #2a3854;
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.auth-btn:hover {
-  background: #374a6b;
-}
-
-.password-reset-btn {
-  margin-left: 12px;
-  background: none;
-  border: none;
-  color: #FFD600;
-  cursor: pointer;
-  font-size: 14px;
-  text-decoration: underline;
-}
-
-.password-reset-btn:hover {
-  color: #ffe666;
-}
-
-/* Style disabled state */
-.profile-form input:disabled {
-  background: #1a2438;
-  color: #666;
-  cursor: not-allowed;
-}
-
-.update-btn:disabled {
-  background: #666;
-  cursor: not-allowed;
-}
-
-.update-btn:disabled:hover {
-  background: #666;
 }
