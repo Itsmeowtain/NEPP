@@ -1,5 +1,4 @@
-import { auth } from '../config/firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import authManager from '../utils/auth-manager.js';
 
 class SidebarManager {
     constructor() {
@@ -30,17 +29,10 @@ class SidebarManager {
     }
 
     setupAuthListener() {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                this.currentUser = {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName
-                };
-                this.updateSidebarUser();
-            } else {
-                this.updateSidebarUser(null);
-            }
+        // Subscribe to global auth state changes
+        authManager.onAuthStateChanged((user) => {
+            this.currentUser = user;
+            this.updateSidebarUser(user);
         });
     }
 

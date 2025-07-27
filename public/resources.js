@@ -1,7 +1,6 @@
 import ResourcesService from './services/resources-service.js';
 import AuthService from './services/auth-service.js';
-import { auth } from './config/firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import authManager from './utils/auth-manager.js';
 import sidebarManager from './components/sidebar.js';
 
 class ResourcesManager {
@@ -115,13 +114,10 @@ class ResourcesManager {
     }
 
     setupAuthListener() {
-        onAuthStateChanged(auth, async (user) => {
+        // Subscribe to global auth state changes
+        authManager.onAuthStateChanged(async (user) => {
             if (user) {
-                this.currentUser = {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName
-                };
+                this.currentUser = user;
                 
                 // Load user files
                 await this.loadFiles();
