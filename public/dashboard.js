@@ -198,11 +198,31 @@ async function loadUpcomingEvents() {
         querySnapshot.forEach(doc => {
             const event = doc.data();
             if (event.date && calendar) {
-                calendar.addEvent(event.date.toDate(), {
-                    title: event.title,
-                    description: event.description,
-                    id: doc.id
-                });
+                let eventDate;
+                
+                // Handle different date formats
+                if (typeof event.date === 'string') {
+                    // Date stored as string
+                    eventDate = new Date(event.date);
+                } else if (event.date && typeof event.date.toDate === 'function') {
+                    // Firestore Timestamp
+                    eventDate = event.date.toDate();
+                } else if (event.date instanceof Date) {
+                    // Already a Date object
+                    eventDate = event.date;
+                } else {
+                    console.warn('Unknown date format:', event.date);
+                    return; // Skip this event
+                }
+                
+                // Only add if we have a valid date
+                if (eventDate instanceof Date && !isNaN(eventDate)) {
+                    calendar.addEvent(eventDate, {
+                        title: event.title,
+                        description: event.description,
+                        id: doc.id
+                    });
+                }
             }
         });
     } catch (error) {
