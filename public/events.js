@@ -431,14 +431,38 @@ class EventsManager {
     }
 
     renderCalendarView() {
-        // Simple calendar view placeholder
+        // Create calendar widget container
         this.eventsCalendar.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                <h3>Calendar View</h3>
-                <p>Calendar view implementation coming soon...</p>
-                <p>For now, use the list view to see all events.</p>
+            <div class="calendar-container">
+                <div id="events-calendar-widget"></div>
+                <div class="calendar-legend">
+                    <h4>Legend</h4>
+                    <div class="legend-item">
+                        <span class="legend-color event-type-event"></span>
+                        <span>Events</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color event-type-form-due"></span>
+                        <span>Form Due Dates</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color event-type-announcement"></span>
+                        <span>Scheduled Announcements</span>
+                    </div>
+                </div>
             </div>
         `;
+
+        // Initialize calendar widget
+        const calendarContainer = document.getElementById('events-calendar-widget');
+        if (calendarContainer && window.CalendarWidget) {
+            this.calendarWidget = new CalendarWidget(calendarContainer);
+            
+            // Set events on the calendar
+            if (this.allEvents && this.allEvents.length > 0) {
+                this.calendarWidget.setEvents(this.allEvents);
+            }
+        }
     }
 
     showCreateEventModal() {
