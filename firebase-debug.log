@@ -1,0 +1,45 @@
+[debug] [2025-07-27T14:32:56.423Z] ----------------------------------------------------------------------
+[debug] [2025-07-27T14:32:56.426Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Daniel Tikhonov\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve --only hosting
+[debug] [2025-07-27T14:32:56.426Z] CLI Version:   14.8.0
+[debug] [2025-07-27T14:32:56.426Z] Platform:      win32
+[debug] [2025-07-27T14:32:56.426Z] Node Version:  v22.16.0
+[debug] [2025-07-27T14:32:56.427Z] Time:          Sun Jul 27 2025 10:32:56 GMT-0400 (Eastern Daylight Time)
+[debug] [2025-07-27T14:32:56.427Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-27T14:32:56.596Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-27T14:32:56.596Z] > authorizing via signed-in user (danieltikhonov08@gmail.com)
+[debug] [2025-07-27T14:32:56.596Z] [iam] checking project nepp-82074 for permissions ["firebase.projects.get"]
+[debug] [2025-07-27T14:32:56.597Z] Checked if tokens are valid: false, expires at: 1753626893996
+[debug] [2025-07-27T14:32:56.597Z] Checked if tokens are valid: false, expires at: 1753626893996
+[debug] [2025-07-27T14:32:56.598Z] > refreshing access token with scopes: []
+[debug] [2025-07-27T14:32:56.599Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-07-27T14:32:56.599Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-27T14:32:56.782Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-07-27T14:32:56.782Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-27T14:32:56.788Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074:testIamPermissions [none]
+[debug] [2025-07-27T14:32:56.788Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074:testIamPermissions x-goog-quota-user=projects/nepp-82074
+[debug] [2025-07-27T14:32:56.788Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-07-27T14:32:56.967Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074:testIamPermissions 200
+[debug] [2025-07-27T14:32:56.967Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-07-27T14:32:56.968Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:56.968Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:56.968Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074 [none]
+[debug] [2025-07-27T14:32:57.091Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074 200
+[debug] [2025-07-27T14:32:57.091Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/nepp-82074 {"projectNumber":"390060926966","projectId":"nepp-82074","lifecycleState":"ACTIVE","name":"NEPP","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-06-08T15:39:38.192211Z"}
+[debug] [2025-07-27T14:32:57.092Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:57.092Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:57.092Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/nepp-82074/sites 
+[debug] [2025-07-27T14:32:57.658Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/nepp-82074/sites 200
+[debug] [2025-07-27T14:32:57.658Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/nepp-82074/sites {"sites":[{"name":"projects/nepp-82074/sites/nepp-82074","defaultUrl":"https://nepp-82074.web.app","appId":"1:390060926966:web:dd7a95fc553a86bdd2c9d7","type":"DEFAULT_SITE"}]}
+[debug] [2025-07-27T14:32:57.659Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:57.659Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:57.659Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nepp-82074/webApps/1:390060926966:web:dd7a95fc553a86bdd2c9d7/config [none]
+[debug] [2025-07-27T14:32:58.242Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nepp-82074/webApps/1:390060926966:web:dd7a95fc553a86bdd2c9d7/config 200
+[debug] [2025-07-27T14:32:58.242Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nepp-82074/webApps/1:390060926966:web:dd7a95fc553a86bdd2c9d7/config {"projectId":"nepp-82074","appId":"1:390060926966:web:dd7a95fc553a86bdd2c9d7","databaseURL":"https://nepp-82074-default-rtdb.firebaseio.com","storageBucket":"nepp-82074.firebasestorage.app","apiKey":"AIzaSyDVzvRC9lwlJGRLzsj1S-o-Y-b1DtmD9TQ","authDomain":"nepp-82074.firebaseapp.com","messagingSenderId":"390060926966","measurementId":"G-QSFQKZDETN"}
+[debug] [2025-07-27T14:32:58.245Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:58.245Z] Checked if tokens are valid: true, expires at: 1753630375782
+[debug] [2025-07-27T14:32:58.246Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nepp-82074 [none]
+[debug] [2025-07-27T14:32:58.503Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nepp-82074 200
+[debug] [2025-07-27T14:32:58.503Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nepp-82074 {"projectId":"nepp-82074","projectNumber":"390060926966","displayName":"NEPP","name":"projects/nepp-82074","resources":{"hostingSite":"nepp-82074","realtimeDatabaseInstance":"nepp-82074-default-rtdb"},"state":"ACTIVE","etag":"1_462e006f-e8e1-451b-b11e-929b69ccd16c"}
+[info] i  hosting[nepp-82074]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] +  hosting[nepp-82074]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
