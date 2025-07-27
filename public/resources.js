@@ -450,6 +450,154 @@ class ResourcesManager {
             notification.remove();
         }, 5000);
     }
+
+    // Sharing modal functions
+    async showShareModal() {
+        await this.loadGroups();
+        await this.loadUsers();
+        this.shareModal.style.display = 'flex';
+    }
+
+    hideShareModal() {
+        this.shareModal.style.display = 'none';
+        this.selectedFiles = [];
+    }
+
+    updateShareOptions() {
+        const shareType = this.shareType.value;
+        
+        this.groupSelection.style.display = shareType === 'group' ? 'block' : 'none';
+        this.userSelection.style.display = shareType === 'specific' ? 'block' : 'none';
+    }
+
+    async loadGroups() {
+        try {
+            // Load user's groups
+            const { getDocs, query, where, collection } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js');
+            const { db } = await import('./config/firebase-config.js');
+            
+            const groupsQuery = query(
+                collection(db, 'groups'),
+                where('members', 'array-contains', this.currentUser.uid)
+            );
+            
+            const groupsSnapshot = await getDocs(groupsQuery);
+            
+            this.groupSelect.innerHTML = '<option value="">Select a group...</option>';
+            groupsSnapshot.forEach(doc => {
+                const group = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = group.name;
+                this.groupSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading groups:', error);
+        }
+    }
+
+    async loadUsers() {
+        try {
+            // For now, we'll just show a placeholder. In a real app, you'd load users
+            this.userSelect.innerHTML = '<p>User selection feature coming soon...</p>';
+        } catch (error) {
+            console.error('Error loading users:', error);
+        }
+    }
+
+    async handleShareConfirm() {
+        const shareType = this.shareType.value;
+        const description = this.shareDescription.value;
+        
+        let shareData = {
+            type: shareType,
+            description: description
+        };
+
+        if (shareType === 'group') {
+            const selectedGroup = this.groupSelect.value;
+            if (!selectedGroup) {
+                this.showError('Please select a group');
+                return;
+            }
+            shareData.groupId = selectedGroup;
+        } else if (shareType === 'specific') {
+            // Handle specific user sharing when implemented
+            this.showError('Specific user sharing not yet implemented');
+            return;
+        }
+
+        // Upload files with sharing data
+        await this.uploadFilesWithSharing(this.selectedFiles, shareData);
+        this.hideShareModal();
+    }
+
+    async uploadFilesWithSharing(files, shareData) {
+        if (this.isUploading) return;
+
+        this.isUploading = true;
+        this.uploadQueue = [...files];
+        this.showUploadModal();
+
+        try {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                await this.uploadSingleFileWithSharing(file, i, shareData);
+            }
+
+            // Reload files list
+            await this.loadFiles();
+            this.hideUploadModal();
+            this.showSuccess(`Successfully uploaded and shared ${files.length} file(s)`);
+        } catch (error) {
+            console.error('Upload error:', error);
+            this.showError('Upload failed: ' + error.message);
+        } finally {
+            this.isUploading = false;
+        }
+    }
+
+    async uploadSingleFileWithSharing(file, index, shareData) {
+        const progressId = `progress-${index}`;
+        
+        // Add progress item to modal
+        const progressItem = document.createElement('div');
+        progressItem.className = 'progress-item';
+        progressItem.id = progressId;
+        progressItem.innerHTML = `
+            <div class="progress-info">
+                <div class="progress-name">${file.name}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-status">Preparing...</div>
+            </div>
+        `;
+        this.uploadProgress.appendChild(progressItem);
+
+        const progressBar = progressItem.querySelector('.progress-fill');
+        const progressStatus = progressItem.querySelector('.progress-status');
+
+        try {
+            await ResourcesService.uploadFileWithSharing(
+                file,
+                this.currentUser.uid,
+                shareData,
+                (progress) => {
+                    progressBar.style.width = `${progress}%`;
+                    progressStatus.textContent = `${Math.round(progress)}%`;
+                }
+            );
+
+            progressStatus.textContent = 'Complete';
+            progressItem.classList.add('complete');
+        } catch (error) {
+            console.error(`Upload failed for ${file.name}:`, error);
+            progressStatus.textContent = 'Failed';
+            progressItem.classList.add('error');
+            throw error;
+        }
+    }
 }
 
 // Initialize the resources manager when DOM is loaded
