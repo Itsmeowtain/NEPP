@@ -14,8 +14,7 @@ body {
   background: #101622;
 }
 .sidebar {
-  margin-top: 60px;
-  width: 350px;
+  width: 320px;
   background: #101b28;
   color: #FFD600;
   display: flex;
