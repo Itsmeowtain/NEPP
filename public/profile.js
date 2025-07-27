@@ -1,5 +1,5 @@
 import { auth, db, storage } from '/config/firebase-config.js';
-import { updateProfile } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { 
   collection, 
   doc, 
@@ -16,7 +16,6 @@ import {
   uploadBytes, 
   getDownloadURL 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
-import authManager from './utils/auth-manager.js';
 
 class ProfileManager {
   constructor() {
@@ -25,18 +24,16 @@ class ProfileManager {
   }
 
   init() {
-    // Subscribe to auth state changes
-    authManager.onAuthStateChanged(async (user) => {
+    // Use Firebase auth directly like other pages
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         this.currentUser = user;
         await this.loadUserProfile();
         this.setupEventListeners();
         this.displayUserInfo();
-      } else if (authManager.isAuthInitialized()) {
-        // Only redirect if auth has been initialized and there's no user
+      } else {
         window.location.href = '/login.html';
       }
-      // If auth is not initialized yet, wait for the next callback
     });
   }
 
