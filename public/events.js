@@ -207,15 +207,38 @@ class EventsManager {
 
     async loadScheduledAnnouncements() {
         try {
-            // Get announcements with scheduled dates
-            const announcementsQuery = query(
+            // Get announcements with scheduled dates that the user has access to
+            // First, get announcements created by the user
+            const userAnnouncementsQuery = query(
                 collection(db, 'announcements'),
+                where('createdBy', '==', this.currentUser.uid),
                 where('scheduledDate', '!=', null),
                 orderBy('scheduledDate', 'asc')
             );
             
-            const announcementsSnapshot = await getDocs(announcementsQuery);
-            this.announcements = announcementsSnapshot.docs.map(doc => {
+            const userAnnouncementsSnapshot = await getDocs(userAnnouncementsQuery);
+            let allAnnouncements = [...userAnnouncementsSnapshot.docs];
+            
+            // Then, get announcements from groups the user is a member of
+            if (this.userGroups && this.userGroups.length > 0) {
+                for (const group of this.userGroups) {
+                    const groupAnnouncementsQuery = query(
+                        collection(db, 'announcements'),
+                        where('groupId', '==', group.id),
+                        where('scheduledDate', '!=', null),
+                        orderBy('scheduledDate', 'asc')
+                    );
+                    
+                    const groupAnnouncementsSnapshot = await getDocs(groupAnnouncementsQuery);
+                    // Avoid duplicates
+                    const newAnnouncements = groupAnnouncementsSnapshot.docs.filter(doc => 
+                        !allAnnouncements.some(existingDoc => existingDoc.id === doc.id)
+                    );
+                    allAnnouncements = [...allAnnouncements, ...newAnnouncements];
+                }
+            }
+            
+            this.announcements = allAnnouncements.map(doc => {
                 const data = doc.data();
                 return {
                     id: `announcement-${doc.id}`,
