@@ -2,6 +2,7 @@ import ResourcesService from './services/resources-service.js';
 import AuthService from './services/auth-service.js';
 import { auth } from './config/firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import sidebarManager from './components/sidebar.js';
 
 class ResourcesManager {
     constructor() {
@@ -122,22 +123,12 @@ class ResourcesManager {
                     displayName: user.displayName
                 };
                 
-                // Update sidebar with user info
-                this.updateSidebarUser();
-                
                 // Load user files
                 await this.loadFiles();
             } else {
                 this.showAuthAlert();
             }
         });
-    }
-
-    updateSidebarUser() {
-        const userNameElement = document.getElementById('sidebar-user-name');
-        if (userNameElement && this.currentUser) {
-            userNameElement.textContent = this.currentUser.displayName || this.currentUser.email || 'NEPP User';
-        }
     }
 
     showAuthAlert() {
