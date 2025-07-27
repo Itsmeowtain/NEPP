@@ -35,12 +35,51 @@ initializeAuth().then(() => {
 // Separate public forms loading
 async function loadPublicForms() {
   try {
-    const publicQuery = query(
+    // Get user's groups first to filter public forms
+    const userGroupsQuery = query(
+      collection(db, 'groups'),
+      where('members', 'array-contains', auth.currentUser.uid)
+    );
+    
+    const userGroups = await getDocs(userGroupsQuery);
+    const userGroupIds = userGroups.docs.map(doc => doc.id);
+
+    let allPublicForms = [];
+
+    // Get public forms created by the user
+    const userPublicQuery = query(
       collection(db, 'forms'),
+      where('createdBy', '==', auth.currentUser.uid),
       where('type', '==', 'public'),
       orderBy('createdAt', 'desc')
     );
-    const publicSnapshot = await getDocs(publicQuery);
+    const userPublicSnapshot = await getDocs(userPublicQuery);
+    allPublicForms = [...userPublicSnapshot.docs];
+
+    // Get public forms from groups the user is a member of
+    if (userGroupIds.length > 0) {
+      for (const groupId of userGroupIds) {
+        const groupPublicQuery = query(
+          collection(db, 'forms'),
+          where('groupId', '==', groupId),
+          where('type', '==', 'public'),
+          orderBy('createdAt', 'desc')
+        );
+        const groupPublicSnapshot = await getDocs(groupPublicQuery);
+        
+        // Avoid duplicates
+        const newForms = groupPublicSnapshot.docs.filter(doc => 
+          !allPublicForms.some(existingDoc => existingDoc.id === doc.id)
+        );
+        allPublicForms = [...allPublicForms, ...newForms];
+      }
+    }
+
+    // Create a snapshot-like object to work with existing displayForms function
+    const publicSnapshot = {
+      docs: allPublicForms
+    };
+    
     displayForms(publicSnapshot, 'publicFormsList');
   } catch (error) {
     console.error("Error loading public forms:", error);
