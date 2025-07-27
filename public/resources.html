@@ -65,6 +65,47 @@
                     <button id="cancelUpload" class="cancel-btn">Cancel</button>
                 </div>
             </div>
+
+            <!-- File Sharing Options Modal -->
+            <div id="shareModal" class="modal share-modal" style="display: none;">
+                <div class="modal-content">
+                    <h3>Share Files</h3>
+                    <div class="share-options">
+                        <div class="form-group">
+                            <label for="shareType">Share with:</label>
+                            <select id="shareType" class="form-select">
+                                <option value="private">Only me (Private)</option>
+                                <option value="group">Group members</option>
+                                <option value="specific">Specific users</option>
+                            </select>
+                        </div>
+                        
+                        <div id="groupSelection" class="form-group" style="display: none;">
+                            <label for="groupSelect">Select Group:</label>
+                            <select id="groupSelect" class="form-select">
+                                <!-- Groups will be loaded here -->
+                            </select>
+                        </div>
+                        
+                        <div id="userSelection" class="form-group" style="display: none;">
+                            <label for="userSelect">Select Users:</label>
+                            <div id="userSelect" class="user-select-container">
+                                <!-- Users will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shareDescription">Description (optional):</label>
+                            <textarea id="shareDescription" rows="3" placeholder="Add a description for these files..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button id="cancelShare" class="cancel-btn">Cancel</button>
+                        <button id="confirmShare" class="submit-btn">Share Files</button>
+                    </div>
+                </div>
+            </div>
             
             <!-- File Preview Modal -->
             <div id="previewModal" class="modal preview-modal" style="display: none;">

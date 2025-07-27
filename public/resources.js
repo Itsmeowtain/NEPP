@@ -26,6 +26,15 @@ class ResourcesManager {
         this.uploadModal = document.getElementById('uploadModal');
         this.uploadProgress = document.getElementById('uploadProgress');
         this.cancelUploadBtn = document.getElementById('cancelUpload');
+        this.shareModal = document.getElementById('shareModal');
+        this.shareType = document.getElementById('shareType');
+        this.groupSelection = document.getElementById('groupSelection');
+        this.groupSelect = document.getElementById('groupSelect');
+        this.userSelection = document.getElementById('userSelection');
+        this.userSelect = document.getElementById('userSelect');
+        this.shareDescription = document.getElementById('shareDescription');
+        this.cancelShareBtn = document.getElementById('cancelShare');
+        this.confirmShareBtn = document.getElementById('confirmShare');
         this.previewModal = document.getElementById('previewModal');
         this.previewContainer = document.getElementById('previewContainer');
         this.closePreviewBtn = document.getElementById('closePreview');
@@ -95,6 +104,19 @@ class ResourcesManager {
 
         this.closePreviewBtn.addEventListener('click', () => {
             this.closePreview();
+        });
+
+        // Share modal events
+        this.shareType.addEventListener('change', () => {
+            this.updateShareOptions();
+        });
+
+        this.cancelShareBtn.addEventListener('click', () => {
+            this.hideShareModal();
+        });
+
+        this.confirmShareBtn.addEventListener('click', () => {
+            this.handleShareConfirm();
         });
 
         // Close modals when clicking outside
@@ -223,8 +245,11 @@ class ResourcesManager {
 
         if (validFiles.length === 0) return;
 
-        // Start upload process
-        this.uploadFiles(validFiles);
+        // Store files for sharing modal
+        this.selectedFiles = validFiles;
+        
+        // Show sharing options modal
+        this.showShareModal();
     }
 
     async uploadFiles(files) {
