@@ -100,7 +100,7 @@ async function loadAnnouncements() {
   try {
     const q = query(
         collection(db, "announcements"), 
-        orderBy("time", "desc"), 
+        orderBy("createdAt", "desc"), 
         limit(3)
     );
     const querySnapshot = await getDocs(q);
@@ -116,12 +116,20 @@ async function loadAnnouncements() {
     }
     
     container.innerHTML = announcements.map(announcement => {
-      const time = announcement.time ? announcement.time.toDate() : new Date();
+      const time = announcement.createdAt ? announcement.createdAt.toDate() : new Date();
+      const isScheduled = announcement.scheduledFor && announcement.scheduledFor.toDate() > new Date();
+      
       return `
         <div class="announcement-item">
-          <strong>${announcement.message}</strong><br>
-          <span class="announcement-author">By: ${announcement.author || 'Anonymous'}</span>
-          <span class="announcement-time">${formatTimeAgo(time)}</span>
+          <div class="announcement-header">
+            <h4 class="announcement-title">${announcement.title || 'Untitled'}</h4>
+            ${isScheduled ? '<span class="scheduled-badge">Scheduled</span>' : ''}
+          </div>
+          <p class="announcement-message">${announcement.message}</p>
+          <div class="announcement-meta">
+            <span class="announcement-author">By: ${announcement.authorName || 'Anonymous'}</span>
+            <span class="announcement-time">${formatTimeAgo(time)}</span>
+          </div>
         </div>
       `;
     }).join('');

@@ -30,7 +30,9 @@ body {
   margin: 38px 0 28px 0;
 }
 .sidebar-logo img {
-  width: 115px; /* Increased from 104px to make it slightly bigger */
+  width: 135px;
+  height: auto;
+  margin-bottom: 1rem;
 }
 .sidebar-nav {
   flex: 1;
