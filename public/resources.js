@@ -1,7 +1,5 @@
 import ResourcesService from './services/resources-service.js';
-import AuthService from './services/auth-service.js';
 import authManager from './utils/auth-manager.js';
-import sidebarManager from './components/sidebar.js';
 
 class ResourcesManager {
     constructor() {
