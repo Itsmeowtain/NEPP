@@ -1,19 +1,24 @@
 import EventsService from './services/events-service.js';
 import GroupsService from './services/groups-service.js';
-import AuthService from './services/auth-service.js';
+import { CalendarWidget } from './components/calendar-widget.js';
 import authManager from './utils/auth-manager.js';
+import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { db } from './config/firebase-config.js';
 
 class EventsManager {
     constructor() {
         this.currentUser = null;
         this.userGroups = [];
         this.events = [];
+        this.formDueDates = [];
+        this.announcements = [];
         this.filteredEvents = [];
         this.currentView = 'list';
+        this.calendar = null;
         
         this.initializeElements();
         this.bindEvents();
-        this.checkAuthentication();
+        this.setupAuthListener();
     }
 
     initializeElements() {
