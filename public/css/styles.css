@@ -23,16 +23,48 @@ body {
   font-family: 'Inter', Arial, sans-serif;
   padding: 0;
 }
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 10px 0 0 0;
+  padding: 10px 0;
+}
+
 .sidebar-logo {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px 0 0 0;
-  padding: 10px 0;
+  flex-grow: 1;
 }
+
 .sidebar-logo img {
   width: 250px;
   height: 250px;
+}
+
+.settings-icon-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #64748B;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.settings-icon-top:hover {
+  background-color: #F1F5F9;
+  color: #334155;
+  transform: rotate(90deg);
+}
+
+.settings-icon-top .nav-icon {
+  width: 24px;
+  height: 24px;
 }
 .sidebar-nav {
   flex: 1;
