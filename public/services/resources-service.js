@@ -29,7 +29,7 @@ class ResourcesService {
             // Create unique filename with timestamp
             const timestamp = Date.now();
             const fileName = `${timestamp}_${file.name}`;
-            const filePath = `users/${userId}/resources/${fileName}`;
+            const filePath = `resources/${userId}/${fileName}`;
             
             // Create storage reference
             const storageRef = ref(storage, filePath);
