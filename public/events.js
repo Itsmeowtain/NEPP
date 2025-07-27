@@ -819,6 +819,33 @@ class EventsManager {
             notification.remove();
         }, 5000);
     }
+
+    editEvent(eventId) {
+        // Navigate to edit events page with event ID as parameter
+        window.location.href = `edit-events.html?eventId=${encodeURIComponent(eventId)}`;
+    }
+
+    async deleteEvent(eventId) {
+        if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const user = await this.authManager.getCurrentUser();
+            if (!user) {
+                throw new Error('You must be logged in to delete events');
+            }
+
+            await this.eventsService.deleteEvent(eventId, user.uid);
+            this.showSuccess('Event deleted successfully');
+            this.hideEventDetailsModal();
+            // Refresh the events list
+            await this.loadAllEvents();
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            this.showError('Failed to delete event');
+        }
+    }
 }
 
 // Initialize the events manager
