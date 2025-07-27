@@ -39,6 +39,10 @@
 
 .profile-avatar {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .avatar-large {
@@ -52,6 +56,32 @@
   font-size: 2.5rem;
   font-weight: bold;
   color: #0a0f1a;
+  position: relative;
+  overflow: hidden;
+}
+
+.change-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #374a6b;
+  border: 1px solid #4a5f7a;
+  border-radius: 6px;
+  color: #ccd6f6;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.change-avatar-btn:hover {
+  background: #4a5f7a;
+  border-color: #ffd600;
+}
+
+.change-avatar-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .profile-info h2 {
