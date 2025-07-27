@@ -106,14 +106,15 @@ class EventsManager {
         });
     }
 
-    async checkAuthentication() {
+    setupAuthListener() {
         // Subscribe to global auth state changes
         authManager.onAuthStateChanged(async (user) => {
             if (user) {
                 this.currentUser = user;
                 
-                // Load user groups and events
-                await this.loadData();
+                // Load all data and initialize calendar
+                await this.loadAllData();
+                this.initializeCalendar();
             } else {
                 this.showAuthAlert();
             }
@@ -125,27 +126,169 @@ class EventsManager {
         window.location.href = 'login.html';
     }
 
-    async loadData() {
+    async loadAllData() {
         try {
             // Load user groups first
+            await this.loadUserGroups();
+            
+            // Load all event data in parallel
+            await Promise.all([
+                this.loadEvents(),
+                this.loadFormDueDates(),
+                this.loadScheduledAnnouncements()
+            ]);
+            
+            // Combine and filter all events
+            this.combineAllEvents();
+            this.filterEvents();
+            this.renderEvents();
+            this.renderUpcomingEvents();
+            
+        } catch (error) {
+            console.error('Error loading events data:', error);
+            this.showError('Failed to load events data');
+        }
+    }
+
+    async loadFormDueDates() {
+        try {
+            // Get forms with due dates
+            const formsQuery = query(
+                collection(db, 'forms'),
+                where('dueDate', '!=', null),
+                orderBy('dueDate', 'asc')
+            );
+            
+            const formsSnapshot = await getDocs(formsQuery);
+            this.formDueDates = formsSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: `form-${doc.id}`,
+                    type: 'form-due',
+                    title: `Form Due: ${data.title}`,
+                    description: `Form "${data.title}" is due`,
+                    date: data.dueDate.toDate(),
+                    time: data.dueTime || '23:59',
+                    location: 'Online Form',
+                    formId: doc.id,
+                    visibility: data.type || 'public',
+                    createdBy: data.createdBy,
+                    category: 'deadline'
+                };
+            });
+        } catch (error) {
+            console.error('Error loading form due dates:', error);
+            this.formDueDates = [];
+        }
+    }
+
+    async loadScheduledAnnouncements() {
+        try {
+            // Get announcements with scheduled dates
+            const announcementsQuery = query(
+                collection(db, 'announcements'),
+                where('scheduledDate', '!=', null),
+                orderBy('scheduledDate', 'asc')
+            );
+            
+            const announcementsSnapshot = await getDocs(announcementsQuery);
+            this.announcements = announcementsSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: `announcement-${doc.id}`,
+                    type: 'announcement',
+                    title: data.title,
+                    description: data.content,
+                    date: data.scheduledDate.toDate(),
+                    time: data.scheduledTime || '09:00',
+                    location: 'Announcement',
+                    announcementId: doc.id,
+                    visibility: 'public',
+                    createdBy: data.createdBy,
+                    category: 'announcement'
+                };
+            });
+        } catch (error) {
+            console.error('Error loading scheduled announcements:', error);
+            this.announcements = [];
+        }
+    }
+
+    combineAllEvents() {
+        // Combine events, form due dates, and announcements
+        this.events = [
+            ...this.events,
+            ...this.formDueDates,
+            ...this.announcements
+        ];
+        
+        // Sort by date
+        this.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    initializeCalendar() {
+        // Initialize the main calendar widget
+        this.calendar = new CalendarWidget('eventsCalendar');
+        
+        // Pass events data to calendar
+        this.calendar.setEvents(this.events);
+        
+        // Initialize mini calendar
+        this.miniCalendar = new CalendarWidget('miniCalendar');
+        this.miniCalendar.setEvents(this.events);
+        this.miniCalendar.setMiniMode(true);
+    }
+
+    async loadUserGroups() {
+        try {
             this.userGroups = await GroupsService.getUserGroups(this.currentUser.uid);
             
             // Populate group filter
             this.populateGroupFilter();
-            
-            // Load events
+        } catch (error) {
+            console.error('Error loading user groups:', error);
+            this.userGroups = [];
+        }
+    }
+
+    async loadEvents() {
+        try {
+            // Load events created by user or for their groups
             const userGroupIds = this.userGroups.map(group => group.id);
             this.events = await EventsService.getUserEvents(this.currentUser.uid, userGroupIds);
-            this.filteredEvents = [...this.events];
-            
-            // Render events
-            this.renderEvents();
-            this.renderUpcomingEvents();
-            this.renderMiniCalendar();
         } catch (error) {
-            console.error('Error loading data:', error);
-            this.showError('Failed to load events');
+            console.error('Error loading events:', error);
+            this.events = [];
         }
+    }
+
+    renderEvents() {
+        if (this.currentView === 'list') {
+            this.renderListView();
+        } else {
+            this.renderCalendarView();
+        }
+    }
+
+    showError(message) {
+        // Simple error notification
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 2000;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
     }
 
     populateGroupFilter() {

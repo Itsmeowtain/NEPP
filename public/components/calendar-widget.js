@@ -123,6 +123,38 @@ export class CalendarWidget {
     this.container.innerHTML = html;
   }
 
+  setEvents(eventsArray) {
+    // Clear existing events
+    this.events.clear();
+    this.forms.clear();
+    
+    // Organize events by date and type
+    eventsArray.forEach(event => {
+      const dateString = this.formatDateString(new Date(event.date));
+      
+      if (event.type === 'form-due') {
+        if (!this.forms.has(dateString)) {
+          this.forms.set(dateString, []);
+        }
+        this.forms.get(dateString).push(event);
+      } else {
+        if (!this.events.has(dateString)) {
+          this.events.set(dateString, []);
+        }
+        this.events.get(dateString).push(event);
+      }
+    });
+    
+    this.render();
+  }
+
+  setMiniMode(isMini = true) {
+    this.isMiniMode = isMini;
+    if (isMini) {
+      this.container.classList.add('mini-calendar');
+    }
+  }
+
   addEvent(date, event) {
     const dateString = this.formatDateString(new Date(date));
     if (!this.events.has(dateString)) {
