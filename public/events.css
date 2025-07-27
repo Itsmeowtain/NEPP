@@ -697,9 +697,8 @@
     font-size: 1.8rem;
     font-weight: 600;
     text-shadow:
-    0 0 10px #fff, /* Second shadow: slightly more blur */
-    0 0 20px #0fa, /* Third shadow: larger blur, colored for the glow */
-    0 0 40px #0fa; /* Fourth shadow: largest blur, same color */
+    0 0 2px #fff,
+    0 0 5px #ecd906;
 }
 
 .form-group {
@@ -708,7 +707,7 @@
 
 .form-group label {
     display: block;
-    color: #1a1a1a;
+    color: #ffee00;
     font-weight: 600;
     margin-bottom: 0.5rem;
     font-size: 1rem;
@@ -718,7 +717,7 @@
 .form-group select,
 .form-group textarea {
     width: 100%;
-    background: #ffffff;
+    background: #b0aeae;
     border: 2px solid #e1e5e9;
     border-radius: 8px;
     padding: 0.75rem;
