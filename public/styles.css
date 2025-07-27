@@ -46,7 +46,7 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 1.42rem;
+  font-size: 1.38rem;
   font-weight: 400;
   color: #fff;
   cursor: pointer;
@@ -61,7 +61,7 @@ body {
   justify-content: center;
   width: 24px;
   height: 24px;
-  margin-right: 12px;
+  margin-right: 10px;
 }
 .sidebar-item .sidebar-icon svg {
   color: #FFD600; /* Makes the SVG gold colored */
