@@ -1,4 +1,4 @@
-import authManager from '../utils/auth-manager.js';
+import authManager from '/utils/auth-manager.js';
 
 class SidebarManager {
     constructor() {

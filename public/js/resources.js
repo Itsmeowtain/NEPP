@@ -156,7 +156,7 @@ class ResourcesManager {
         try {
             // Get user's groups first
             const { getDocs, query, where, collection } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js');
-            const { db } = await import('./config/firebase-config.js');
+            const { db } = await import('/config/firebase-config.js');
             
             const groupsQuery = query(
                 collection(db, 'groups'),

@@ -13,7 +13,7 @@ import {
     arrayRemove,
     getDoc 
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
-import { db } from '../config/firebase-config.js';
+import { db } from '/config/firebase-config.js';
 
 class GroupsService {
     constructor() {

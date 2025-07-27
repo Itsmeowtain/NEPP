@@ -1,4 +1,4 @@
-import { CONSTANTS } from '../config/constants.js';
+import { CONSTANTS } from '/config/constants.js';
 
 export const UIUtils = {
   showMessage(elementId, message, type = 'pending') {

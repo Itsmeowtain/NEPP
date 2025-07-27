@@ -16,7 +16,7 @@ import {
     deleteObject,
     getMetadata 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
-import { db, storage } from '../config/firebase-config.js';
+import { db, storage } from '/config/firebase-config.js';
 
 class ResourcesService {
     constructor() {
