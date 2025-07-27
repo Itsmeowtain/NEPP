@@ -133,6 +133,77 @@ class ResourcesService {
         }
     }
 
+    // Upload file with sharing options
+    async uploadFileWithSharing(file, userId, shareData, onProgress = null) {
+        try {
+            // Create unique filename with timestamp
+            const timestamp = Date.now();
+            const fileName = `${timestamp}_${file.name}`;
+            const filePath = `resources/${userId}/${fileName}`;
+            
+            // Create storage reference
+            const storageRef = ref(storage, filePath);
+            
+            // Upload file with progress tracking
+            const uploadTask = uploadBytes(storageRef, file);
+            
+            if (onProgress) {
+                // Note: Firebase v9 doesn't have built-in progress tracking for uploadBytes
+                // We'll simulate progress for now
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    onProgress(Math.min(progress, 90));
+                    if (progress >= 90) {
+                        clearInterval(progressInterval);
+                    }
+                }, 100);
+            }
+
+            const snapshot = await uploadTask;
+            
+            if (onProgress) {
+                onProgress(100);
+            }
+
+            // Get download URL
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            
+            // Get file metadata
+            const metadata = await getMetadata(snapshot.ref);
+            
+            // Save file metadata to Firestore with sharing information
+            const fileData = {
+                name: file.name,
+                originalName: file.name,
+                size: file.size,
+                type: file.type,
+                downloadURL,
+                storagePath: filePath,
+                userId,
+                uploadedAt: serverTimestamp(),
+                lastModified: new Date(file.lastModified),
+                // Sharing data
+                shareType: shareData.type,
+                shareDescription: shareData.description || '',
+                groupId: shareData.groupId || null,
+                sharedWith: shareData.sharedWith || [],
+                isShared: shareData.type !== 'private'
+            };
+
+            const docRef = await addDoc(collection(db, this.collectionName), fileData);
+            
+            return {
+                id: docRef.id,
+                ...fileData,
+                uploadedAt: new Date() // For immediate display
+            };
+        } catch (error) {
+            console.error('Error uploading file with sharing:', error);
+            throw error;
+        }
+    }
+
     // Search files by name
     searchFiles(files, searchTerm) {
         if (!searchTerm.trim()) return files;
