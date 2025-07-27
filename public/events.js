@@ -152,15 +152,38 @@ class EventsManager {
 
     async loadFormDueDates() {
         try {
-            // Get forms with due dates
-            const formsQuery = query(
+            // Get forms with due dates that the user has access to
+            // First, get forms created by the user
+            const userFormsQuery = query(
                 collection(db, 'forms'),
+                where('createdBy', '==', this.currentUser.uid),
                 where('dueDate', '!=', null),
                 orderBy('dueDate', 'asc')
             );
             
-            const formsSnapshot = await getDocs(formsQuery);
-            this.formDueDates = formsSnapshot.docs.map(doc => {
+            const userFormsSnapshot = await getDocs(userFormsQuery);
+            let allForms = [...userFormsSnapshot.docs];
+            
+            // Then, get forms from groups the user is a member of
+            if (this.userGroups && this.userGroups.length > 0) {
+                for (const group of this.userGroups) {
+                    const groupFormsQuery = query(
+                        collection(db, 'forms'),
+                        where('groupId', '==', group.id),
+                        where('dueDate', '!=', null),
+                        orderBy('dueDate', 'asc')
+                    );
+                    
+                    const groupFormsSnapshot = await getDocs(groupFormsQuery);
+                    // Avoid duplicates
+                    const newForms = groupFormsSnapshot.docs.filter(doc => 
+                        !allForms.some(existingDoc => existingDoc.id === doc.id)
+                    );
+                    allForms = [...allForms, ...newForms];
+                }
+            }
+            
+            this.formDueDates = allForms.map(doc => {
                 const data = doc.data();
                 return {
                     id: `form-${doc.id}`,
