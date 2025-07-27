@@ -204,6 +204,62 @@ class ResourcesService {
         }
     }
 
+    // Get all files for a user (including shared files)
+    async getUserFilesWithShared(userId, userGroups = []) {
+        try {
+            const queries = [];
+            
+            // User's own files
+            queries.push(
+                query(
+                    collection(db, this.collectionName),
+                    where('userId', '==', userId),
+                    orderBy('uploadedAt', 'desc')
+                )
+            );
+            
+            // Files shared with user's groups
+            if (userGroups.length > 0) {
+                for (const groupId of userGroups) {
+                    queries.push(
+                        query(
+                            collection(db, this.collectionName),
+                            where('groupId', '==', groupId),
+                            where('shareType', '==', 'group'),
+                            orderBy('uploadedAt', 'desc')
+                        )
+                    );
+                }
+            }
+
+            // Execute all queries
+            const queryPromises = queries.map(q => getDocs(q));
+            const querySnapshots = await Promise.all(queryPromises);
+            
+            // Combine results and remove duplicates
+            const filesMap = new Map();
+            
+            querySnapshots.forEach(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    filesMap.set(doc.id, {
+                        id: doc.id,
+                        ...data,
+                        uploadedAt: data.uploadedAt?.toDate() || new Date(),
+                        lastModified: data.lastModified?.toDate() || new Date()
+                    });
+                });
+            });
+            
+            // Convert to array and sort by date
+            const files = Array.from(filesMap.values());
+            return files.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+        } catch (error) {
+            console.error('Error fetching user files with shared:', error);
+            throw error;
+        }
+    }
+
     // Search files by name
     searchFiles(files, searchTerm) {
         if (!searchTerm.trim()) return files;

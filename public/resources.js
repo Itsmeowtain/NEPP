@@ -154,7 +154,20 @@ class ResourcesManager {
 
     async loadFiles() {
         try {
-            this.files = await ResourcesService.getUserFiles(this.currentUser.uid);
+            // Get user's groups first
+            const { getDocs, query, where, collection } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js');
+            const { db } = await import('./config/firebase-config.js');
+            
+            const groupsQuery = query(
+                collection(db, 'groups'),
+                where('members', 'array-contains', this.currentUser.uid)
+            );
+            
+            const groupsSnapshot = await getDocs(groupsQuery);
+            const userGroups = groupsSnapshot.docs.map(doc => doc.id);
+            
+            // Load files including shared ones
+            this.files = await ResourcesService.getUserFilesWithShared(this.currentUser.uid, userGroups);
             this.filteredFiles = [...this.files];
             this.renderFiles();
         } catch (error) {
