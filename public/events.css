@@ -696,7 +696,10 @@
     margin: 0 0 1.5rem 0;
     font-size: 1.8rem;
     font-weight: 600;
-    text-shadow:  0 0 10px #fff, /* Second shadow: slightly more blur */
+    text-shadow:
+    0 0 10px #fff, /* Second shadow: slightly more blur */
+    0 0 20px #0fa, /* Third shadow: larger blur, colored for the glow */
+    0 0 40px #0fa; /* Fourth shadow: largest blur, same color */
 }
 
 .form-group {
