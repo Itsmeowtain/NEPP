@@ -15,10 +15,10 @@
 .create-group-btn {
     background: var(--accent-color);
     color: var(--bg-primary);
-    border: gold;
+    border: #e6c100;
     border-radius: 8px;
     padding: 0.75rem 1.5rem;
-    font-weight: 600;
+    font-weight: 780;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -27,7 +27,7 @@
 }
 
 .create-group-btn:hover {
-    background: #e6c100;
+    background: #cba901;
 }
 
 .create-group-btn svg {
