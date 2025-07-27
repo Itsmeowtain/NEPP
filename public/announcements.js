@@ -10,8 +10,7 @@ import {
   query,
   where,
   orderBy,
-  serverTimestamp,
-  getDoc 
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
