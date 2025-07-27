@@ -504,7 +504,8 @@ class EventsManager {
                 time: formData.get('eventTime'),
                 location: formData.get('eventLocation').trim(),
                 groupId: formData.get('eventGroup') || null,
-                visibility: formData.get('eventVisibility')
+                visibility: formData.get('eventVisibility'),
+                type: formData.get('eventType') || 'event'
             };
 
             // Validate event data

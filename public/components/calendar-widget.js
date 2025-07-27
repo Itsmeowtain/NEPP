@@ -103,11 +103,25 @@ export class CalendarWidget {
       const date = new Date(year, month, day);
       const dateString = this.formatDateString(date);
       const isToday = date.toDateString() === today.toDateString();
-      const hasEvents = this.events.has(dateString) || this.forms.has(dateString);
+      
+      const dayEvents = this.events.get(dateString) || [];
+      const dayForms = this.forms.get(dateString) || [];
       
       let classes = 'calendar-day';
       if (isToday) classes += ' today';
-      if (hasEvents) classes += ' has-events';
+      
+      // Add event type classes for styling
+      if (dayEvents.length > 0) {
+        const hasRegularEvents = dayEvents.some(e => e.type === 'event' || !e.type);
+        const hasAnnouncements = dayEvents.some(e => e.type === 'announcement');
+        
+        if (hasRegularEvents) classes += ' has-events';
+        if (hasAnnouncements) classes += ' has-announcement';
+      }
+      
+      if (dayForms.length > 0) {
+        classes += ' has-form-due';
+      }
       
       html += `<div class="${classes}" data-day="${day}">${day}</div>`;
     }

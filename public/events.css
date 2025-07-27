@@ -804,4 +804,84 @@
     .form-actions {
         flex-direction: column-reverse;
     }
+
+    /* Calendar responsive */
+    .calendar-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .calendar-legend {
+        width: 100%;
+        order: 2;
+    }
+    
+    .calendar-legend h4 {
+        margin-bottom: 0.75rem;
+    }
+    
+    .legend-item {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Calendar View Styles */
+.calendar-container {
+    display: flex;
+    gap: 2rem;
+    min-height: 500px;
+}
+
+#events-calendar-widget {
+    flex: 1;
+    min-height: 500px;
+}
+
+.calendar-legend {
+    flex-shrink: 0;
+    width: 200px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: fit-content;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-legend h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.event-type-event {
+    background: var(--primary-color);
+}
+
+.event-type-form-due {
+    background: #ff6b6b;
+}
+
+.event-type-announcement {
+    background: #4ecdc4;
+}
+
+.legend-item span:last-child {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
