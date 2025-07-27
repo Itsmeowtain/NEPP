@@ -8,6 +8,7 @@ class AuthManager {
     constructor() {
         this.currentUser = null;
         this.listeners = [];
+        this.authInitialized = false;
         this.setupAuthListener();
     }
 
@@ -17,11 +18,15 @@ class AuthManager {
                 this.currentUser = {
                     uid: user.uid,
                     email: user.email,
-                    displayName: user.displayName
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    metadata: user.metadata
                 };
             } else {
                 this.currentUser = null;
             }
+            
+            this.authInitialized = true;
             
             // Notify all listeners about the auth state change
             this.listeners.forEach(callback => callback(this.currentUser));
@@ -32,12 +37,18 @@ class AuthManager {
         return this.currentUser;
     }
 
+    isAuthInitialized() {
+        return this.authInitialized;
+    }
+
     // Subscribe to auth state changes
     onAuthStateChanged(callback) {
         this.listeners.push(callback);
         
-        // Call immediately with current state
-        callback(this.currentUser);
+        // Only call immediately if auth has been initialized
+        if (this.authInitialized) {
+            callback(this.currentUser);
+        }
         
         // Return unsubscribe function
         return () => {

@@ -32,9 +32,11 @@ class ProfileManager {
         await this.loadUserProfile();
         this.setupEventListeners();
         this.displayUserInfo();
-      } else {
+      } else if (authManager.isAuthInitialized()) {
+        // Only redirect if auth has been initialized and there's no user
         window.location.href = '/login.html';
       }
+      // If auth is not initialized yet, wait for the next callback
     });
   }
 
