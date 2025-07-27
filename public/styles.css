@@ -437,31 +437,3 @@ nav, .footer {
   font-size: 1.2em;
 }
 
-/* Settings Icon Top-Left Position */
-.settings-top {
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  text-decoration: none;
-}
-
-.settings-top:hover {
-  transform: rotate(30deg);
-}
-
-.settings-top .nav-icon {
-  width: 28px;
-  height: 28px;
-  color: #FFD600;
-  transition: color 0.2s ease;
-}
-
-.settings-top:hover .nav-icon {
-  color: #ffe666;
-}
