@@ -352,9 +352,22 @@ class EventsManager {
             const group = this.userGroups.find(g => g.id === event.groupId);
             const isCreator = event.createdBy === this.currentUser.uid;
             
+            // Determine event category for display
+            let eventCategory = 'event';
+            let categoryText = 'Event';
+            
+            if (event.type === 'form-due') {
+                eventCategory = 'deadline';
+                categoryText = 'Form Due';
+            } else if (event.type === 'announcement') {
+                eventCategory = 'announcement';
+                categoryText = 'Announcement';
+            }
+            
             return `
                 <div class="event-card" onclick="eventsManager.showEventDetails('${event.id}')">
                     <div class="event-header">
+                        <div class="event-category ${eventCategory}">${categoryText}</div>
                         <h3 class="event-title">${event.title}</h3>
                         <div class="event-time">
                             ${EventsService.formatDate(event.date)} at ${EventsService.formatTime(event.time)}
