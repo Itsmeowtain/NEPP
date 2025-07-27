@@ -27,12 +27,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 38px 0 28px 0;
+  margin: 20px 0 0 0;
+  padding: 20px 0;
 }
 .sidebar-logo img {
   width: 135px;
   height: auto;
-  margin-bottom: 1rem;
 }
 .sidebar-nav {
   flex: 1;
