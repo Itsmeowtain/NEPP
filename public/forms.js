@@ -35,52 +35,59 @@ initializeAuth().then(() => {
 // Separate public forms loading
 async function loadPublicForms() {
   try {
-    // Get user's groups first to filter public forms
-    const userGroupsQuery = query(
-      collection(db, 'groups'),
-      where('members', 'array-contains', auth.currentUser.uid)
-    );
-    
-    const userGroups = await getDocs(userGroupsQuery);
-    const userGroupIds = userGroups.docs.map(doc => doc.id);
-
     let allPublicForms = [];
 
-    // Get public forms created by the user
-    const userPublicQuery = query(
+    // Get all public forms that the user can access
+    // This includes: 1) All truly public forms, 2) User's own public forms
+    const publicQuery = query(
       collection(db, 'forms'),
-      where('createdBy', '==', auth.currentUser.uid),
       where('type', '==', 'public'),
       orderBy('createdAt', 'desc')
     );
-    const userPublicSnapshot = await getDocs(userPublicQuery);
-    allPublicForms = [...userPublicSnapshot.docs];
-
-    // Get public forms from groups the user is a member of
-    if (userGroupIds.length > 0) {
-      for (const groupId of userGroupIds) {
-        const groupPublicQuery = query(
-          collection(db, 'forms'),
-          where('groupId', '==', groupId),
-          where('type', '==', 'public'),
-          orderBy('createdAt', 'desc')
-        );
-        const groupPublicSnapshot = await getDocs(groupPublicQuery);
-        
-        // Avoid duplicates
-        const newForms = groupPublicSnapshot.docs.filter(doc => 
-          !allPublicForms.some(existingDoc => existingDoc.id === doc.id)
-        );
-        allPublicForms = [...allPublicForms, ...newForms];
+    
+    const publicSnapshot = await getDocs(publicQuery);
+    
+    // Filter forms to only show those the user can access
+    const accessibleForms = [];
+    
+    for (const formDoc of publicSnapshot.docs) {
+      const formData = formDoc.data();
+      
+      // Always include user's own forms
+      if (formData.createdBy === auth.currentUser.uid) {
+        accessibleForms.push(formDoc);
+        continue;
+      }
+      
+      // For other forms, check if they're truly public (no group restriction)
+      // or if user has access to the group
+      if (!formData.group) {
+        // No group restriction - truly public
+        accessibleForms.push(formDoc);
+      } else {
+        // Check if user is member of the form's group
+        try {
+          const groupDoc = await getDoc(doc(db, 'groups', formData.group));
+          if (groupDoc.exists() && groupDoc.data().members?.includes(auth.currentUser.uid)) {
+            accessibleForms.push(formDoc);
+          }
+        } catch (groupError) {
+          // If we can't access the group, skip this form
+          console.warn('Cannot access group for form:', formDoc.id);
+        }
       }
     }
 
     // Create a snapshot-like object to work with existing displayForms function
-    const publicSnapshot = {
-      docs: allPublicForms
+    const filteredSnapshot = {
+      docs: accessibleForms,
+      empty: accessibleForms.length === 0,
+      forEach: function(callback) {
+        this.docs.forEach(callback);
+      }
     };
     
-    displayForms(publicSnapshot, 'publicFormsList');
+    displayForms(filteredSnapshot, 'publicFormsList');
   } catch (error) {
     console.error("Error loading public forms:", error);
     const container = document.getElementById('publicFormsList');

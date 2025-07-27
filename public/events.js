@@ -296,8 +296,13 @@ class EventsManager {
     }
 
     handleDateSelection(dateString, selectedDate) {
+        // Ensure events array exists
+        if (!this.events) {
+            this.events = [];
+        }
+        
         // Get events for the selected date
-        const eventsForDate = this.allEvents.filter(event => {
+        const eventsForDate = this.events.filter(event => {
             const eventDateString = this.formatDateString(new Date(event.date));
             return eventDateString === dateString;
         });
