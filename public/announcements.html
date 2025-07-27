@@ -24,7 +24,7 @@
         <div class="panel announcements" style="width:100%;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Latest Announcements</h2>
-            <button class="create-announcement" style="background:gold;color:#0a0f1a;border:none;border-radius:6px;padding:8px 18px;font-weight:bold;font-size:1em;cursor:pointer;">+ Create Announcement</button>
+            <button class="create-announcement">+ Create Announcement</button>
           </div>
           <div class="announcements-list">
             <!-- Announcements will be loaded here -->
@@ -35,7 +35,7 @@
       <!-- Announcement Popup Modal -->
       <div class="announcement-popup" style="display:none;">
         <div class="popup-content">
-          <h2 style="color:#FFD600;">Create Announcement</h2>
+          <h2>Create Announcement</h2>
           
           <!-- Form fields will be inserted here by JavaScript -->
           
@@ -44,11 +44,11 @@
             <textarea class="popup-message" id="popupMessage" placeholder="Type your announcement..." maxlength="1000" rows="4"></textarea>
           </div>
           
-          <div class="popup-error" style="color:#ff3860; min-height:22px;"></div>
+          <div class="popup-error"></div>
           
           <div class="popup-actions">
-            <button class="popup-submit" style="background:gold;color:#0a0f1a;border:none;border-radius:6px;padding:8px 16px;font-weight:bold;cursor:pointer;">Post</button>
-            <button class="popup-cancel" style="background:#222;color:white;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;">Cancel</button>
+            <button class="popup-submit">Post</button>
+            <button class="popup-cancel">Cancel</button>
           </div>
         </div>
       </div>
@@ -56,32 +56,140 @@
   </div>
   
   <style>
-    .form-group {
+    /* Announcement Popup Modal Styling */
+    .announcement-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background: #112334;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: none;
+    }
+
+    .popup-content h2 {
+      color: #ecd906;
+      margin: 0 0 1.5rem 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-shadow:
+        0 0 2px #fff,
+        0 0 5px #ecd906;
+    }
+
+    .popup-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .popup-submit {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+      border: 2px solid #000000;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-size: 1rem;
+    }
+
+    .popup-submit:hover {
+      background-color: green;
+      border-color: #f7e702;
+    }
+
+    .popup-cancel {
+      background: var(--accent-color);
+      font-size: 1rem;
+      color: #ffffff;
+      border: 2px solid #000000;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .popup-cancel:hover {
+      border-color: #f7e702;
+      background: red;
+    }
+
+    .popup-error {
+      color: #ff3860;
+      min-height: 22px;
       margin-bottom: 1rem;
+    }
+
+    .popup-message {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
     }
     
     .form-group label {
       display: block;
-      color: #ccd6f6;
-      font-weight: 500;
+      color: #ffee00;
+      font-weight: 600;
       margin-bottom: 0.5rem;
-      font-size: 0.875rem;
+      font-size: 1rem;
     }
     
-    .form-select, .form-input {
+    .form-select, .form-input, .popup-message {
       width: 100%;
-      background: #1a2438;
-      border: 1px solid #374a6b;
-      border-radius: 6px;
+      background: #b0aeae;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
       padding: 0.75rem;
-      color: #ccd6f6;
-      font-size: 0.875rem;
+      color: #1a1a1a;
+      font-size: 1rem;
       transition: border-color 0.2s ease;
     }
     
-    .form-select:focus, .form-input:focus {
+    .form-select:focus, .form-input:focus, .popup-message:focus {
       outline: none;
-      border-color: #ffd600;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.1);
+    }
+
+    .create-announcement {
+      background: gold;
+      color: #0a0f1a;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-weight: bold;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .create-announcement:hover {
+      background: #f7e702;
+      transform: translateY(-1px);
     }
     
     .announcement-item {

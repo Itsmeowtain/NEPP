@@ -190,13 +190,11 @@ document.querySelector('.forms-search input').addEventListener('input', (e) => {
     formCard.innerHTML = `
       <div class="form-header">
         <h3>${form.title}</h3>
-        ${auth.currentUser?.uid !== form.createdBy ? `
-          <button class="bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" data-form-id="${doc.id}" title="${isBookmarked ? 'Remove bookmark' : 'Add bookmark'}">
-            <svg xmlns="http://www.w3.org/2000/svg" ${isBookmarked ? 'fill="currentColor"' : 'fill="none"'} viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bookmark-icon">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-            </svg>
-          </button>
-        ` : ''}
+        <button class="bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" data-form-id="${doc.id}" title="${isBookmarked ? 'Remove bookmark' : 'Add bookmark'}">
+          <svg xmlns="http://www.w3.org/2000/svg" ${isBookmarked ? 'fill="currentColor"' : 'fill="none"'} viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bookmark-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+          </svg>
+        </button>
       </div>
       <p class="form-description">${form.description || 'No description provided'}</p>
       <div class="form-meta">
