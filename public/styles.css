@@ -14,7 +14,8 @@ body {
   background: #101622;
 }
 .sidebar {
-  width: 300px;
+  margin-top: 60px;
+  width: 350px;
   background: #101b28;
   color: #FFD600;
   display: flex;
@@ -89,11 +90,11 @@ body {
 }
 .sidebar-user-name {
   font-weight: 700;
-  font-size: 1.298em; /* Increased by 10% from 1.18em */
+  font-size: 1.298em;
   display: block;
 }
 .sidebar-user-verified {
-  font-size: 1.1em; /* Increased by 10% from 1em */
+  font-size: 1.1em;
   color: #FFD600;
   opacity: 0.85;
 }
