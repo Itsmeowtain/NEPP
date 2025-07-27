@@ -918,10 +918,6 @@ body.light .settings-section {
   transform: rotate(45deg);
 }
 
-.settings-icon::before {
-  content: "⚙️";
-}
-
 .settings-tooltip {
   position: absolute;
   right: 100%;
