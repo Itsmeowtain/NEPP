@@ -28,7 +28,8 @@ class GroupsService {
                 description: groupData.description || '',
                 type: groupData.type, // 'open' or 'invite'
                 maxMembers: groupData.maxMembers || null,
-                ownerId: userId,
+                createdBy: userId, // Changed from ownerId to match Firestore rules
+                ownerId: userId, // Keep ownerId for backward compatibility
                 members: [userId],
                 admins: [userId],
                 createdAt: serverTimestamp(),
