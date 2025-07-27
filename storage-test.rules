@@ -1,0 +1,9 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Temporary permissive rules for testing - CHANGE THESE FOR PRODUCTION!
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
