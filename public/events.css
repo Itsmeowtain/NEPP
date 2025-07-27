@@ -8,8 +8,12 @@
 
 .events-header h1 {
     color: var(--text-white);
-    font-size: 3.2rem;
-    font-weight: 600;
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .create-event-btn {
@@ -680,7 +684,8 @@
 }
 
 .modal-content {
-    background: #112334;
+    background: #1a2438;
+    border: 2px solid #374a6b;
     border-radius: 12px;
     padding: 2rem;
     max-width: 500px;
@@ -688,13 +693,13 @@
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content h2 {
     color: #ecd906;
     margin: 0 0 1.5rem 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 600;
     text-shadow:
     0 0 2px #fff,

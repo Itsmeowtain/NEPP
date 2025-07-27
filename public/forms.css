@@ -5,6 +5,16 @@
   margin-bottom: 2rem;
 }
 
+.forms-header h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
 .create-form-btn {
   display: flex;
   align-items: center;
