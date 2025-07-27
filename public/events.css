@@ -924,3 +924,79 @@
     color: var(--text-secondary);
     font-size: 0.9rem;
 }
+
+/* Day Events Display */
+.day-events-container {
+    background: var(--bg-primary);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    margin-top: 1rem;
+}
+
+.day-events h3 {
+    color: var(--text-white);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.no-events {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 1rem;
+    font-style: italic;
+}
+
+.day-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.day-event-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.day-event-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.day-event-time {
+    background: var(--accent-color);
+    color: var(--bg-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 4rem;
+    text-align: center;
+}
+
+.day-event-info {
+    flex: 1;
+}
+
+.day-event-title {
+    color: var(--text-white);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.day-event-type {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}

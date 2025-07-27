@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Event - NEPP</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="events.css">
+</head>
+<body>
+    <div id="settings-container"></div>
+    <div class="nepp-root">
+        <a href="settings.html" class="settings-top">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="nav-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+        </a>
+        <aside class="sidebar"></aside>
+        <main class="main-content">
+            <div class="edit-event-header">
+                <div class="header-content">
+                    <h1>Edit Event</h1>
+                    <a href="events.html" class="back-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                        Back to Events
+                    </a>
+                </div>
+            </div>
+            
+            <div class="edit-event-container">
+                <div class="edit-event-form-container">
+                    <form id="editEventForm">
+                        <div class="form-group">
+                            <label for="editEventType">Event Type *</label>
+                            <select id="editEventType" name="eventType" required>
+                                <option value="event">Regular Event</option>
+                                <option value="announcement">Scheduled Announcement</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEventTitle">Event Title *</label>
+                            <input type="text" id="editEventTitle" name="eventTitle" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEventDescription">Description</label>
+                            <textarea id="editEventDescription" name="eventDescription" rows="4"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editEventDate">Date *</label>
+                                <input type="date" id="editEventDate" name="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEventTime">Time *</label>
+                                <input type="time" id="editEventTime" name="eventTime" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEventLocation">Location</label>
+                            <input type="text" id="editEventLocation" name="eventLocation" placeholder="Event location or meeting link">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEventGroup">Group</label>
+                            <select id="editEventGroup" name="eventGroup">
+                                <option value="">Personal Event</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEventVisibility">Visibility *</label>
+                            <select id="editEventVisibility" name="eventVisibility" required>
+                                <option value="public">Public (Anyone can see)</option>
+                                <option value="group">Group Members Only</option>
+                                <option value="private">Private (Only me)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" id="cancelEdit" class="cancel-btn">Cancel</button>
+                            <button type="button" id="deleteEvent" class="delete-btn">Delete Event</button>
+                            <button type="submit" class="submit-btn">Update Event</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="event-preview">
+                    <h3>Event Preview</h3>
+                    <div id="eventPreview" class="preview-content">
+                        <!-- Preview will be updated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script type="module" src="./config/firebase-config.js"></script>
+    <script type="module" src="./components/sidebar.js"></script>
+    <script type="module" src="./services/auth-service.js"></script>
+    <script type="module" src="./services/events-service.js"></script>
+    <script type="module" src="./services/groups-service.js"></script>
+    <script type="module" src="./edit-events.js"></script>
+</body>
+</html>

@@ -279,10 +279,96 @@ class EventsManager {
         // Pass events data to calendar
         this.calendar.setEvents(this.events);
         
+        // Add event listener for date selection
+        document.getElementById('eventsCalendar').addEventListener('dateSelected', (e) => {
+            this.handleDateSelection(e.detail.dateString, e.detail.date);
+        });
+        
         // Initialize mini calendar
         this.miniCalendar = new CalendarWidget('miniCalendar');
         this.miniCalendar.setEvents(this.events);
         this.miniCalendar.setMiniMode(true);
+        
+        // Add event listener for mini calendar date selection
+        document.getElementById('miniCalendar').addEventListener('dateSelected', (e) => {
+            this.handleDateSelection(e.detail.dateString, e.detail.date);
+        });
+    }
+
+    handleDateSelection(dateString, selectedDate) {
+        // Get events for the selected date
+        const eventsForDate = this.allEvents.filter(event => {
+            const eventDateString = this.formatDateString(new Date(event.date));
+            return eventDateString === dateString;
+        });
+
+        // Update the events sidebar to show events for this date
+        this.displayDayEvents(eventsForDate, selectedDate);
+    }
+
+    formatDateString(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    displayDayEvents(events, selectedDate) {
+        // Find or create a day events display area
+        let dayEventsContainer = document.querySelector('.day-events-container');
+        
+        if (!dayEventsContainer) {
+            // Create the container and add it to the sidebar
+            dayEventsContainer = document.createElement('div');
+            dayEventsContainer.className = 'day-events-container';
+            this.eventsSidebar.appendChild(dayEventsContainer);
+        }
+
+        const dateStr = selectedDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        if (events.length === 0) {
+            dayEventsContainer.innerHTML = `
+                <div class="day-events">
+                    <h3>Events for ${dateStr}</h3>
+                    <p class="no-events">No events scheduled for this date.</p>
+                </div>
+            `;
+        } else {
+            dayEventsContainer.innerHTML = `
+                <div class="day-events">
+                    <h3>Events for ${dateStr}</h3>
+                    <div class="day-events-list">
+                        ${events.map(event => `
+                            <div class="day-event-item" onclick="eventsManager.showEventDetails('${event.id}')">
+                                <div class="day-event-time">${this.formatTime(event.time)}</div>
+                                <div class="day-event-info">
+                                    <div class="day-event-title">${event.title}</div>
+                                    <div class="day-event-type">${this.getEventTypeLabel(event.type)}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    getEventTypeLabel(type) {
+        switch(type) {
+            case 'form-due': return 'Form Due';
+            case 'announcement': return 'Announcement';
+            default: return 'Event';
+        }
+    }
+
+    formatTime(time) {
+        if (!time) return '';
+        const [hours, minutes] = time.split(':');
+        const hour12 = hours % 12 || 12;
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        return `${hour12}:${minutes} ${ampm}`;
     }
 
     async loadUserGroups() {
