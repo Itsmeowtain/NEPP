@@ -16,7 +16,7 @@ import {
   uploadBytes, 
   getDownloadURL 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
-import authManager from './utils/auth-manager.js';
+import authManager from '/utils/auth-manager.js';
 
 class ProfileManager {
   constructor() {

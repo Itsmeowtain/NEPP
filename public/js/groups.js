@@ -1,5 +1,5 @@
-import GroupsService from './services/groups-service.js';
-import authManager from './utils/auth-manager.js';
+import GroupsService from '/services/groups-service.js';
+import authManager from '/utils/auth-manager.js';
 
 class GroupsManager {
     constructor() {

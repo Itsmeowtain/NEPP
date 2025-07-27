@@ -1,8 +1,8 @@
-import EventsService from './services/events-service.js';
-import GroupsService from './services/groups-service.js';
-import authManager from './utils/auth-manager.js';
+import EventsService from '/services/events-service.js';
+import GroupsService from '/services/groups-service.js';
+import authManager from '/utils/auth-manager.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { db } from './config/firebase-config.js';
+import { db } from '/config/firebase-config.js';
 
 class EditEventManager {
     constructor() {

@@ -1,6 +1,6 @@
-import { AuthService } from './services/auth-service.js';
-import { UIUtils } from './utils/ui-utils.js';
-import { CONSTANTS } from './config/constants.js';
+import { AuthService } from '/services/auth-service.js';
+import { UIUtils } from '/utils/ui-utils.js';
+import { CONSTANTS } from '/config/constants.js';
 import { auth, db } from '/config/firebase-config.js';
 import { 
   signInWithEmailAndPassword,

@@ -1,4 +1,4 @@
-import { CONSTANTS } from './config/constants.js';
+import { CONSTANTS } from '/config/constants.js';
 
 // For homepage hero slider
 const slides = document.querySelectorAll('.slide');
