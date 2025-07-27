@@ -12,7 +12,7 @@ import {
   serverTimestamp,
   getDoc 
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { initializeAuth } from '/utils/auth-utils.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 class AnnouncementsManager {
   constructor() {
@@ -21,6 +21,15 @@ class AnnouncementsManager {
     this.announcements = [];
     this.editingAnnouncement = null;
     
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.init());
+    } else {
+      this.init();
+    }
+  }
+
+  init() {
     this.initializeElements();
     this.bindEvents();
     this.setupAuthListener();
@@ -35,6 +44,14 @@ class AnnouncementsManager {
     this.submitBtn = document.querySelector('.popup-submit');
     this.cancelBtn = document.querySelector('.popup-cancel');
     this.announcementsList = document.querySelector('.announcements-list');
+    
+    // Debug logging
+    console.log('Announcements elements found:', {
+      createBtn: !!this.createBtn,
+      popup: !!this.popup,
+      messageInput: !!this.messageInput,
+      announcementsList: !!this.announcementsList
+    });
     
     // Add group selection to popup
     this.addGroupSelectionToPopup();
@@ -84,13 +101,17 @@ class AnnouncementsManager {
     });
   }
 
-  async setupAuthListener() {
-    await initializeAuth();
-    this.currentUser = auth.currentUser;
-    if (this.currentUser) {
-      await this.loadUserGroups();
-      await this.loadAnnouncements();
-    }
+  setupAuthListener() {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        this.currentUser = user;
+        await this.loadUserGroups();
+        await this.loadAnnouncements();
+      } else {
+        // Redirect to login if not authenticated
+        window.location.href = '/login.html';
+      }
+    });
   }
 
   async loadUserGroups() {
@@ -122,52 +143,30 @@ class AnnouncementsManager {
 
   async loadAnnouncements() {
     try {
-      const queries = [];
+      console.log('Loading announcements for user:', this.currentUser?.uid);
+      console.log('User groups:', this.userGroups);
       
-      // Get announcements for all user's groups
-      for (const group of this.userGroups) {
-        queries.push(
-          getDocs(query(
-            collection(db, 'announcements'),
-            where('groupId', '==', group.id),
-            orderBy('createdAt', 'desc')
-          ))
-        );
-      }
-      
-      // Get general announcements (no specific group)
-      queries.push(
-        getDocs(query(
-          collection(db, 'announcements'),
-          where('groupId', '==', ''),
-          orderBy('createdAt', 'desc')
-        ))
+      // Start with a simple query to get all announcements the user can see
+      const announcementsQuery = query(
+        collection(db, 'announcements'),
+        orderBy('createdAt', 'desc')
       );
-
-      const results = await Promise.all(queries);
+      
+      const snapshot = await getDocs(announcementsQuery);
       this.announcements = [];
       
-      results.forEach(snapshot => {
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          this.announcements.push({
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            scheduledFor: data.scheduledFor?.toDate() || null
-          });
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        console.log('Found announcement:', doc.id, data);
+        this.announcements.push({
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          scheduledFor: data.scheduledFor?.toDate() || null
         });
       });
       
-      // Remove duplicates and sort by date
-      const uniqueAnnouncements = Array.from(
-        new Map(this.announcements.map(a => [a.id, a])).values()
-      );
-      
-      this.announcements = uniqueAnnouncements.sort((a, b) => 
-        new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      
+      console.log('Total announcements loaded:', this.announcements.length);
       this.displayAnnouncements();
     } catch (error) {
       console.error('Error loading announcements:', error);
@@ -176,7 +175,13 @@ class AnnouncementsManager {
   }
 
   displayAnnouncements() {
-    if (!this.announcementsList) return;
+    console.log('displayAnnouncements called with:', this.announcements.length, 'announcements');
+    console.log('announcementsList element:', this.announcementsList);
+    
+    if (!this.announcementsList) {
+      console.error('announcements-list element not found!');
+      return;
+    }
 
     if (this.announcements.length === 0) {
       this.announcementsList.innerHTML = `
