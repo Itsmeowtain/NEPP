@@ -266,12 +266,12 @@
 
 .announcement-item .delete-button {
   background: #ef4444;
-  right: 52px;
+  right: 132px;
 }
 
 .announcement-item .edit-button {
   background: #3b82f6;
-  right: 16px;
+  right: 96px;
 }
 
 .announcement-item .delete-button:hover {
@@ -287,9 +287,8 @@
 /* Like Button Functionality */
 .announcement-item .like-button {
   position: absolute;
-  left: 12px;
-  top: 90px;
-  max-width: 80px;
+  right: 16px;
+  bottom: 16px;
   background: #233;
   border: none;
   color: #fff;

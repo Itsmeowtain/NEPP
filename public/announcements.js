@@ -6,6 +6,7 @@ import {
   deleteDoc,
   updateDoc,
   doc,
+  getDoc,
   query,
   where,
   orderBy,
@@ -196,6 +197,7 @@ class AnnouncementsManager {
       const isOwner = announcement.createdBy === this.currentUser?.uid;
       const groupName = this.userGroups.find(g => g.id === announcement.groupId)?.name || 'General';
       const isScheduled = announcement.scheduledFor && announcement.scheduledFor > new Date();
+      const userLiked = announcement.likes && announcement.likes.includes(this.currentUser?.uid);
       
       return `
         <div class="announcement-item ${isScheduled ? 'scheduled' : ''}" data-id="${announcement.id}">
@@ -226,6 +228,10 @@ class AnnouncementsManager {
           </div>
           <div class="announcement-content">
             <p class="announcement-message">${announcement.message}</p>
+            <button class="like-button ${userLiked ? 'liked' : ''}" onclick="announcementsManager.toggleLike('${announcement.id}', this)" title="Like this announcement">
+              <span class="like-icon">👍</span>
+              <span class="like-count">${announcement.likeCount || 0}</span>
+            </button>
           </div>
         </div>
       `;
@@ -342,6 +348,58 @@ class AnnouncementsManager {
     } catch (error) {
       console.error('Error deleting announcement:', error);
       this.showError('Failed to delete announcement');
+    }
+  }
+
+  async toggleLike(announcementId, button) {
+    try {
+      if (!this.currentUser) return;
+
+      const announcementRef = doc(db, 'announcements', announcementId);
+      const announcementDoc = await getDoc(announcementRef);
+      
+      if (!announcementDoc.exists()) return;
+
+      const data = announcementDoc.data();
+      const likes = data.likes || [];
+      const likeCount = data.likeCount || 0;
+      const userLiked = likes.includes(this.currentUser.uid);
+
+      let newLikes, newLikeCount;
+      if (userLiked) {
+        // Remove like
+        newLikes = likes.filter(uid => uid !== this.currentUser.uid);
+        newLikeCount = Math.max(0, likeCount - 1);
+        button.classList.remove('liked');
+      } else {
+        // Add like
+        newLikes = [...likes, this.currentUser.uid];
+        newLikeCount = likeCount + 1;
+        button.classList.add('liked');
+      }
+
+      // Update Firestore
+      await updateDoc(announcementRef, {
+        likes: newLikes,
+        likeCount: newLikeCount
+      });
+
+      // Update UI
+      const countElement = button.querySelector('.like-count');
+      if (countElement) {
+        countElement.textContent = newLikeCount;
+      }
+
+      // Update the local announcements array
+      const announcementIndex = this.announcements.findIndex(a => a.id === announcementId);
+      if (announcementIndex !== -1) {
+        this.announcements[announcementIndex].likes = newLikes;
+        this.announcements[announcementIndex].likeCount = newLikeCount;
+      }
+
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      this.showError('Failed to update like');
     }
   }
 
