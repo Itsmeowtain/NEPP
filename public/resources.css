@@ -7,9 +7,13 @@
 }
 
 .resources-header h1 {
-    color: #ccd6f6;
-    font-size: 2rem;
-    font-weight: 600;
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
 }
 
 .resources-controls {
