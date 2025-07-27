@@ -46,7 +46,7 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 1.42rem; /* Slightly reduced from 1.496rem to prevent icon truncation */
+  font-size: 1.42rem;
   font-weight: 400;
   color: #fff;
   cursor: pointer;
