@@ -53,7 +53,8 @@ class SidebarManager {
         
         sidebarItems.forEach(item => {
             const href = item.getAttribute('href');
-            if (href === currentPage) {
+            const hrefPage = href.split('/').pop();
+            if (hrefPage === currentPage) {
                 item.classList.add('active');
             }
         });
