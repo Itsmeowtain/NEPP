@@ -36,8 +36,16 @@
       <div class="announcement-popup" style="display:none;">
         <div class="popup-content">
           <h2 style="color:#FFD600;">Create Announcement</h2>
-          <textarea class="popup-message" placeholder="Type your announcement..." maxlength="500"></textarea>
+          
+          <!-- Form fields will be inserted here by JavaScript -->
+          
+          <div class="form-group">
+            <label for="popupMessage">Message:</label>
+            <textarea class="popup-message" id="popupMessage" placeholder="Type your announcement..." maxlength="1000" rows="4"></textarea>
+          </div>
+          
           <div class="popup-error" style="color:#ff3860; min-height:22px;"></div>
+          
           <div class="popup-actions">
             <button class="popup-submit" style="background:gold;color:#0a0f1a;border:none;border-radius:6px;padding:8px 16px;font-weight:bold;cursor:pointer;">Post</button>
             <button class="popup-cancel" style="background:#222;color:white;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;">Cancel</button>
@@ -46,6 +54,146 @@
       </div>
     </main>
   </div>
+  
+  <style>
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #ccd6f6;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .form-select, .form-input {
+      width: 100%;
+      background: #1a2438;
+      border: 1px solid #374a6b;
+      border-radius: 6px;
+      padding: 0.75rem;
+      color: #ccd6f6;
+      font-size: 0.875rem;
+      transition: border-color 0.2s ease;
+    }
+    
+    .form-select:focus, .form-input:focus {
+      outline: none;
+      border-color: #ffd600;
+    }
+    
+    .announcement-item {
+      background: #1a2438;
+      border: 1px solid #374a6b;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+    
+    .announcement-item:hover {
+      border-color: #ffd600;
+      transform: translateY(-1px);
+    }
+    
+    .announcement-item.scheduled {
+      border-left: 4px solid #ffd600;
+    }
+    
+    .announcement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .announcement-title {
+      color: #ccd6f6;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .announcement-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: #8892b0;
+    }
+    
+    .announcement-meta span {
+      background: #0a0f1a;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+    
+    .scheduled-badge {
+      background: #ffd600 !important;
+      color: #0a0f1a !important;
+      font-weight: 600;
+    }
+    
+    .announcement-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .action-btn {
+      background: transparent;
+      border: 1px solid #374a6b;
+      border-radius: 6px;
+      padding: 0.5rem;
+      color: #8892b0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+    }
+    
+    .action-btn:hover {
+      border-color: #ffd600;
+      color: #ffd600;
+    }
+    
+    .action-btn svg {
+      width: 1rem;
+      height: 1rem;
+    }
+    
+    .delete-btn:hover {
+      border-color: #ff3860;
+      color: #ff3860;
+    }
+    
+    .announcement-message {
+      color: #ccd6f6;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #8892b0;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  </style>
+  
   <script type="module" src="/config/firebase-config.js"></script>
   <script type="module" src="/components/sidebar.js"></script>
   <script type="module" src="/announcements.js"></script>

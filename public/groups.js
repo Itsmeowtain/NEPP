@@ -1,5 +1,4 @@
 import GroupsService from './services/groups-service.js';
-import AuthService from './services/auth-service.js';
 import authManager from './utils/auth-manager.js';
 
 class GroupsManager {

@@ -470,3 +470,118 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Sharing Modal Styles */
+.share-modal .modal-content {
+    max-width: 500px;
+}
+
+.share-options {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: #ccd6f6;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.form-select {
+    width: 100%;
+    background: #1a2438;
+    border: 1px solid #374a6b;
+    border-radius: 6px;
+    padding: 0.75rem;
+    color: #ccd6f6;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #ffd600;
+}
+
+.form-select option {
+    background: #1a2438;
+    color: #ccd6f6;
+}
+
+.form-group textarea {
+    width: 100%;
+    background: #1a2438;
+    border: 1px solid #374a6b;
+    border-radius: 6px;
+    padding: 0.75rem;
+    color: #ccd6f6;
+    font-size: 0.875rem;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ffd600;
+}
+
+.form-group textarea::placeholder {
+    color: #8892b0;
+}
+
+.user-select-container {
+    background: #1a2438;
+    border: 1px solid #374a6b;
+    border-radius: 6px;
+    padding: 1rem;
+    min-height: 100px;
+    color: #8892b0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.submit-btn, .cancel-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 0.875rem;
+}
+
+.submit-btn {
+    background: #ffd600;
+    color: #0a0f1a;
+}
+
+.submit-btn:hover {
+    background: #ffe666;
+    transform: translateY(-1px);
+}
+
+.cancel-btn {
+    background: transparent;
+    color: #8892b0;
+    border: 1px solid #374a6b;
+}
+
+.cancel-btn:hover {
+    color: #ccd6f6;
+    border-color: #ffd600;
+}
