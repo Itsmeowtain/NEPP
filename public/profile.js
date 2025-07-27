@@ -24,17 +24,21 @@ class ProfileManager {
   }
 
   init() {
-    // Use Firebase auth directly like other pages
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        this.currentUser = user;
-        await this.loadUserProfile();
-        this.setupEventListeners();
-        this.displayUserInfo();
-      } else {
-        window.location.href = '/login.html';
-      }
-    });
+    // Add a small delay to ensure Firebase has time to check for existing session
+    setTimeout(() => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          console.log('User authenticated:', user.email);
+          this.currentUser = user;
+          await this.loadUserProfile();
+          this.setupEventListeners();
+          this.displayUserInfo();
+        } else {
+          console.log('No user found, redirecting to login');
+          window.location.href = '/login.html';
+        }
+      });
+    }, 500); // Increased delay to allow for session restoration
   }
 
   // Display user info
