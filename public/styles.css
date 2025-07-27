@@ -202,6 +202,17 @@ body {
   background: linear-gradient(145deg, #16283c 0%, #1f3449 100%);
 }
 
+.forms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.forms-header h2 {
+  margin: 0;
+}
+
 .create-form-btn {
   background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
   color: #0a0f1a;

@@ -11,7 +11,7 @@ import {
     serverTimestamp,
     and,
     getDoc 
-} from 'firebase/firestore';
+} from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
 import { db } from '../config/firebase-config.js';
 
 class EventsService {
