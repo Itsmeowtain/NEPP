@@ -48,6 +48,76 @@
   outline: none;
 }
 
+/* Form card header with bookmark */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.form-header h3 {
+  margin: 0;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+}
+
+.bookmark-btn:hover {
+  background: rgba(255, 214, 0, 0.1);
+  color: var(--accent-color);
+}
+
+.bookmark-btn.bookmarked {
+  color: var(--accent-color);
+}
+
+.bookmark-btn.bookmarked:hover {
+  color: #e6c100;
+}
+
+.bookmark-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Notification animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
 .forms-container {
   display: flex;
   flex-direction: column;

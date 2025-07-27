@@ -177,15 +177,27 @@ document.querySelector('.forms-search input').addEventListener('input', (e) => {
   }, 300); // 300ms debounce
 });
 
-  snapshot.forEach(doc => {
+  snapshot.forEach(async (doc) => {
     const form = doc.data();
     const formDate = form.createdAt.toDate().toLocaleDateString();
     const dueDate = form.dueDate ? form.dueDate.toDate().toLocaleDateString() : 'No due date';
 
+    // Check if form is bookmarked
+    const isBookmarked = await checkIfBookmarked(doc.id);
+
     const formCard = document.createElement('div');
     formCard.className = 'form-card';
     formCard.innerHTML = `
-      <h3>${form.title}</h3>
+      <div class="form-header">
+        <h3>${form.title}</h3>
+        ${auth.currentUser?.uid !== form.createdBy ? `
+          <button class="bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" data-form-id="${doc.id}" title="${isBookmarked ? 'Remove bookmark' : 'Add bookmark'}">
+            <svg xmlns="http://www.w3.org/2000/svg" ${isBookmarked ? 'fill="currentColor"' : 'fill="none"'} viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bookmark-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+            </svg>
+          </button>
+        ` : ''}
+      </div>
       <p class="form-description">${form.description || 'No description provided'}</p>
       <div class="form-meta">
         <span class="form-date">Created: ${formDate}</span>
@@ -196,14 +208,6 @@ document.querySelector('.forms-search input').addEventListener('input', (e) => {
       </div>
       <div class="form-actions">
         <button class="view-form-btn" data-form-id="${doc.id}">View Form</button>
-        ${auth.currentUser?.uid !== form.createdBy ? `
-          <button class="bookmark-btn" data-form-id="${doc.id}">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-            </svg>
-            Bookmark
-          </button>
-        ` : ''}
         ${auth.currentUser?.uid === form.createdBy ? `
           <button class="edit-form-btn" data-form-id="${doc.id}">Edit</button>
           <button class="delete-form-btn" data-form-id="${doc.id}">Delete</button>
@@ -219,7 +223,9 @@ document.querySelector('.forms-search input').addEventListener('input', (e) => {
     // Add bookmark functionality
     const bookmarkBtn = formCard.querySelector('.bookmark-btn');
     if (bookmarkBtn) {
-      bookmarkBtn.addEventListener('click', async () => {
+      bookmarkBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         await toggleBookmark(doc.id, bookmarkBtn);
       });
     }
@@ -389,4 +395,99 @@ async function loadBookmarkedForms() {
     console.error('Error loading bookmarked forms:', error);
     container.innerHTML = '<p>Error loading bookmarked forms.</p>';
   }
+}
+
+// Bookmark functionality
+async function checkIfBookmarked(formId) {
+  try {
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+    const bookmarkedForms = userDoc.exists() ? (userDoc.data().bookmarkedForms || []) : [];
+    return bookmarkedForms.includes(formId);
+  } catch (error) {
+    console.error('Error checking bookmark status:', error);
+    return false;
+  }
+}
+
+async function toggleBookmark(formId, buttonElement) {
+  try {
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+    const currentBookmarks = userDoc.exists() ? (userDoc.data().bookmarkedForms || []) : [];
+    
+    const isCurrentlyBookmarked = currentBookmarks.includes(formId);
+    
+    if (isCurrentlyBookmarked) {
+      // Remove bookmark
+      await updateDoc(userDocRef, {
+        bookmarkedForms: arrayRemove(formId)
+      });
+      
+      // Update button UI
+      buttonElement.classList.remove('bookmarked');
+      buttonElement.title = 'Add bookmark';
+      const icon = buttonElement.querySelector('.bookmark-icon');
+      icon.setAttribute('fill', 'none');
+      
+      // Show success message
+      showNotification('Bookmark removed', 'success');
+    } else {
+      // Add bookmark
+      await updateDoc(userDocRef, {
+        bookmarkedForms: arrayUnion(formId)
+      });
+      
+      // Update button UI
+      buttonElement.classList.add('bookmarked');
+      buttonElement.title = 'Remove bookmark';
+      const icon = buttonElement.querySelector('.bookmark-icon');
+      icon.setAttribute('fill', 'currentColor');
+      
+      // Show success message
+      showNotification('Form bookmarked', 'success');
+    }
+  } catch (error) {
+    console.error('Error toggling bookmark:', error);
+    showNotification('Failed to update bookmark', 'error');
+  }
+}
+
+async function removeBookmark(formId) {
+  try {
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    await updateDoc(userDocRef, {
+      bookmarkedForms: arrayRemove(formId)
+    });
+    showNotification('Bookmark removed', 'success');
+  } catch (error) {
+    console.error('Error removing bookmark:', error);
+    showNotification('Failed to remove bookmark', 'error');
+  }
+}
+
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    z-index: 1000;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-in forwards';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
 }
