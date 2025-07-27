@@ -577,7 +577,7 @@ class EventsManager {
             this.showSuccess('Event created successfully');
             
             // Reload events
-            await this.loadData();
+            await this.loadAllData();
         } catch (error) {
             console.error('Error creating event:', error);
             this.showError(error.message);

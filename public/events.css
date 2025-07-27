@@ -78,7 +78,7 @@
 
 .calendar-title {
     color: var(--text-white);
-    font-size: 1.25rem;
+    font-size: 2rem;
     font-weight: 600;
 }
 
@@ -289,7 +289,7 @@
 .upcoming-events h3 {
     color: var(--text-white);
     margin-bottom: 1rem;
-    font-size: 1.125rem;
+    font-size: 1.8rem;
 }
 
 .upcoming-event-item {
@@ -342,7 +342,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 1.4rem;
     transition: all 0.2s ease;
 }
 
@@ -373,7 +373,7 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: border-color 0.2s ease;
 }
@@ -721,6 +721,7 @@
     border: 2px solid #e1e5e9;
     border-radius: 8px;
     padding: 0.75rem;
+    resize: none;
     color: #1a1a1a;
     font-size: 1rem;
     transition: border-color 0.2s ease;
