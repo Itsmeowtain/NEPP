@@ -31,7 +31,7 @@ body {
   padding: 20px 0;
 }
 .sidebar-logo img {
-  width: 135px;
+  width: 200px;
   height: auto;
 }
 .sidebar-nav {
@@ -117,56 +117,6 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-.dashboard-sections {
-  display: grid;
-  grid-template-columns: 1.6fr 1.4fr;
-  gap: 32px;
-  align-items: start;
-}
-
-.dashboard-sections.has-many-forms {
-  grid-template-rows: auto auto;
-}
-
-.dashboard-sections.has-few-forms {
-  grid-template-rows: 1fr 1fr;
-}
-
-.announcements {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.forms-section {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.calendar {
-  grid-column: 2;
-  grid-row: 1 / -1;
-  align-self: start;
-}
-
-.dashboard-sections.has-many-forms .calendar {
-  grid-row: 2;
-  grid-column: 1 / -1;
-  margin-top: 16px;
-}
-.panel {
-  background: linear-gradient(145deg, #1a2436 0%, #243447 100%);
-  border: 1px solid #334a66;
-  padding: 32px 28px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
-
-.panel:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 214, 0, 0.3);
 }
 
 .panel h2 {
