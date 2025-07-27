@@ -2,7 +2,7 @@ import EventsService from './services/events-service.js';
 import GroupsService from './services/groups-service.js';
 import { CalendarWidget } from './components/calendar-widget.js';
 import authManager from './utils/auth-manager.js';
-import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { collection, getDocs, query, where, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { db } from './config/firebase-config.js';
 
 class EventsManager {
@@ -586,7 +586,60 @@ class EventsManager {
 
     async showEventDetails(eventId) {
         try {
-            const event = await EventsService.getEventDetails(eventId);
+            let event;
+            
+            // Handle different event types
+            if (eventId.startsWith('form-')) {
+                // This is a form due date, get details from forms collection
+                const formId = eventId.replace('form-', '');
+                const formRef = doc(db, 'forms', formId);
+                const formDoc = await getDoc(formRef);
+                
+                if (!formDoc.exists()) {
+                    throw new Error('Form not found');
+                }
+                
+                const formData = formDoc.data();
+                event = {
+                    id: eventId,
+                    title: `Form Due: ${formData.title}`,
+                    description: formData.description || `Form "${formData.title}" is due`,
+                    date: formData.dueDate.toDate(),
+                    time: formData.dueTime || '23:59',
+                    location: 'Online Form',
+                    type: 'form-due',
+                    formId: formId,
+                    createdBy: formData.createdBy,
+                    visibility: formData.type || 'public'
+                };
+            } else if (eventId.startsWith('announcement-')) {
+                // This is a scheduled announcement, get details from announcements collection
+                const announcementId = eventId.replace('announcement-', '');
+                const announcementRef = doc(db, 'announcements', announcementId);
+                const announcementDoc = await getDoc(announcementRef);
+                
+                if (!announcementDoc.exists()) {
+                    throw new Error('Announcement not found');
+                }
+                
+                const announcementData = announcementDoc.data();
+                event = {
+                    id: eventId,
+                    title: announcementData.title,
+                    description: announcementData.content,
+                    date: announcementData.scheduledDate.toDate(),
+                    time: announcementData.scheduledTime || '09:00',
+                    location: 'Announcement',
+                    type: 'announcement',
+                    announcementId: announcementId,
+                    createdBy: announcementData.createdBy,
+                    visibility: 'public'
+                };
+            } else {
+                // This is a regular event
+                event = await EventsService.getEventDetails(eventId);
+            }
+            
             const group = this.userGroups.find(g => g.id === event.groupId);
             const isCreator = event.createdBy === this.currentUser.uid;
             

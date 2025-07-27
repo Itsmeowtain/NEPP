@@ -8,7 +8,7 @@
 
 .events-header h1 {
     color: var(--text-white);
-    font-size: 2rem;
+    font-size: 3.2rem;
     font-weight: 600;
 }
 
@@ -34,8 +34,8 @@
 }
 
 .create-event-btn svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.6rem;
+    height: 1.6rem;
 }
 
 .events-container {
@@ -358,8 +358,8 @@
 }
 
 .view-btn svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.6rem;
+    height: 1.6rem;
 }
 
 .filter-controls {
@@ -485,20 +485,20 @@
 
 .event-title {
     color: var(--text-white);
-    font-size: 1.3rem;
+    font-size: 2.08rem;
     font-weight: 600;
     margin: 0;
 }
 
 .event-time {
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 1.6rem;
     white-space: nowrap;
 }
 
 .event-description {
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 1.6rem;
     line-height: 1.4;
     margin-bottom: 1rem;
     display: -webkit-box;
@@ -512,7 +512,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 1.44rem;
     color: var(--text-muted);
 }
 
@@ -672,7 +672,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -680,7 +680,7 @@
 }
 
 .modal-content {
-    background: var(--bg-secondary);
+    background: #f8f9fa;
     border-radius: 12px;
     padding: 2rem;
     max-width: 500px;
@@ -688,12 +688,14 @@
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content h2 {
-    color: var(--text-white);
+    color: #1a1a1a;
     margin: 0 0 1.5rem 0;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
 }
 
 .form-group {
@@ -702,21 +704,22 @@
 
 .form-group label {
     display: block;
-    color: var(--text-white);
-    font-weight: 500;
+    color: #1a1a1a;
+    font-weight: 600;
     margin-bottom: 0.5rem;
+    font-size: 1rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    background: #ffffff;
+    border: 2px solid #e1e5e9;
     border-radius: 8px;
     padding: 0.75rem;
-    color: var(--text-white);
-    font-size: 0.875rem;
+    color: #1a1a1a;
+    font-size: 1rem;
     transition: border-color 0.2s ease;
 }
 
@@ -725,6 +728,7 @@
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.1);
 }
 
 .form-group textarea {
