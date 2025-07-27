@@ -63,6 +63,64 @@
   margin: 0;
 }
 
+/* Announcements section styles */
+.announcements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.announcements-header h2 {
+  margin: 0;
+}
+
+/* Calendar section styles */
+.calendar-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-section-header h2 {
+  margin: 0;
+}
+
+/* View All button styles */
+.view-all-btn {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(74, 144, 226, 0.3);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-all-btn:hover {
+  background: linear-gradient(135deg, #357abd 0%, #2968a3 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(74, 144, 226, 0.4);
+}
+.forms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.forms-header h2 {
+  margin: 0;
+}
+
 .create-form-btn {
   background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
   color: #0a0f1a;

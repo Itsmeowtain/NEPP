@@ -15,7 +15,10 @@
       <h1 class="page-header">Welcome, <span id="user-display-name">NEPP User</span></h1>
       <section class="dashboard-sections">
         <div class="panel announcements">
-          <h2>Announcements</h2>
+          <div class="announcements-header">
+            <h2>Announcements</h2>
+            <a href="announcements.html" class="view-all-btn">View All</a>
+          </div>
           <div id="announcementsList">
             <!-- Announcements will be loaded here -->
           </div>
@@ -23,12 +26,15 @@
         <div class="panel forms-section">
           <div class="forms-header">
             <h2>Your Forms</h2>
-            <a href="forms.html" class="create-form-btn">View All Forms</a>
+            <a href="forms.html" class="view-all-btn">View All Forms</a>
           </div>
           <div id="formsList"></div>
         </div>
         <div class="panel calendar">
-          <h2>Date: Upcoming Events</h2>
+          <div class="calendar-section-header">
+            <h2>Date: Upcoming Events</h2>
+            <a href="events.html" class="view-all-btn">View All</a>
+          </div>
           <div id="calendarWidget" class="calendar-widget"></div>
         </div>
       </section>
