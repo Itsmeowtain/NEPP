@@ -1,111 +1,14 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  margin: 0;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  background: #101622;
-  color: #fff;
-}
-.nepp-root {
-  display: flex;
-  min-height: 100vh;
-  background: #101622;
-}
-.sidebar {
-  width: 300px;
-  background: #101b28;
-  color: #FFD600;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: 'Inter', Arial, sans-serif;
-  padding: 0;
-}
-.sidebar-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 38px 0 28px 0;
-}
-.sidebar-logo img {
-  width: 180px;
-  height: auto;
-}
-.sidebar-nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 22px;
-}
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 1.36rem;
-  font-weight: 400;
-  color: #fff;
-  cursor: pointer;
-  border-radius: 20px;
-  padding: 14px 34px;
-  transition: background 0.15s, color 0.15s;
-  letter-spacing: 0.06em;
-}
-.sidebar-item .sidebar-icon {
-  color: #FFD600;
-  font-size: 1.5em;
-  display: flex;
-  align-items: center;
-}
-.sidebar-item.active, .sidebar-item:hover {
-  background: #07111d;
-  color: #FFD600;
-}
-.sidebar-user {
-  margin-top: auto;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-  color: #fff;
-  padding: 32px 0 48px 32px;
-  border-top: 1px solid #FFD60022;
-}
-.sidebar-user-name {
-  font-weight: 700;
-  font-size: 1.18em;
-  display: block;
-}
-.sidebar-user-verified {
-  font-size: 1em;
-  color: #FFD600;
-  opacity: 0.85;
-}
-.sidebar-user-badge {
-  margin-left: 12px;
-  font-size: 2em;
-}
-.main-content {
-  flex: 1;
-  padding: 40px 48px;
-  min-height: 100vh;
-  background: #101622;
-}
-.page-header {
-  font-size: 2.4rem;
-  font-weight: 700;
-  margin-bottom: 32px;
-  color: #fff;
-  background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* Dashboard-specific styles only - global styles are in styles.css */
+
+/* Dashboard grid layout */
 .dashboard-sections {
   display: grid;
   grid-template-columns: 1.6fr 1.4fr;
   gap: 32px;
   align-items: start;
 }
+
+/* Dashboard panel enhancements */
 .panel {
   background: linear-gradient(145deg, #1a2436 0%, #243447 100%);
   border: 1px solid #334a66;
@@ -121,20 +24,13 @@ body {
   border-color: rgba(255, 214, 0, 0.3);
 }
 
-.panel h2 {
-  color: #FFD600;
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
 .panel.announcements {
   grid-column: 1 / 2;
   grid-row: 1 / 3;
   min-height: 500px;
   background: linear-gradient(145deg, #1a2436 0%, #243447 100%);
 }
+
 .panel.forms-section {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
@@ -144,6 +40,7 @@ body {
   box-sizing: border-box;
   background: linear-gradient(145deg, #192641 0%, #243657 100%);
 }
+
 .panel.calendar {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
@@ -153,6 +50,8 @@ body {
   box-sizing: border-box;
   background: linear-gradient(145deg, #16283c 0%, #1f3449 100%);
 }
+
+/* Forms section styles */
 .forms-header {
   display: flex;
   justify-content: space-between;
@@ -296,36 +195,6 @@ body {
   color: #3b82f6;
 }
 
-.empty-state {
-  text-align: center;
-  color: #9ca3af;
-  font-style: italic;
-  padding: 40px 20px;
-  background: #1a2332;
-  border-radius: 8px;
-  border: 2px dashed #374151;
-}
-
-.empty-state a {
-  color: #FFD600;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.empty-state a:hover {
-  text-decoration: underline;
-}
-
-.empty-state.error {
-  border-color: #ef4444;
-  color: #fca5a5;
-}
-.author {
-  display: flex; align-items: center; margin-top: 15px;
-}
-.author .avatar {
-  width: 30px; height: 30px; border-radius: 50%; background: #333; margin-right: 10px;
-}
 
 /* Dashboard Content Item Styles */
 .announcement-item, .form-item {
@@ -376,119 +245,7 @@ body {
   color: #cbd5e0;
 }
 
-.empty-state {
-  color: #a0aec0;
-  text-align: center;
-  padding: 2rem;
-}
-
-.calendar-widget {
-  width: 100%;
-  background: #1a2332;
-  border-radius: 12px;
-  padding: 20px;
-  color: #fff;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.calendar-header h2 {
-  color: #FFD600;
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-.calendar-nav-btn {
-  background: #FFD600;
-  border: none;
-  color: #101622;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-.calendar-nav-btn:hover {
-  background: #e6c100;
-}
-
-.calendar-days-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.calendar-days-header span {
-  text-align: center;
-  font-weight: 600;
-  color: #FFD600;
-  font-size: 0.9rem;
-  padding: 8px 0;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-.calendar-grid > div {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  position: relative;
-}
-
-.calendar-grid > div:not(.other-month) {
-  background: #243447;
-  color: #fff;
-}
-
-.calendar-grid > div:not(.other-month):hover {
-  background: #334a66;
-}
-
-.calendar-grid > div.today {
-  background: #FFD600;
-  color: #101622;
-  font-weight: bold;
-}
-
-.calendar-grid > div.selected {
-  background: #4a9eff;
-  color: #fff;
-}
-
-.calendar-grid > div.has-events::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 6px;
-  height: 6px;
-  background: #ff6b6b;
-  border-radius: 50%;
-}
-
-.calendar-grid > div.other-month {
-  color: #666;
-  cursor: default;
-}
-
-/* Modal Styles */
+/* Modal Styles - Dashboard specific */
 .modal {
   display: flex;
   position: fixed;
