@@ -1,6 +1,7 @@
 import EventsService from './services/events-service.js';
 import GroupsService from './services/groups-service.js';
 import AuthService from './services/auth-service.js';
+import authManager from './utils/auth-manager.js';
 
 class EventsManager {
     constructor() {
@@ -101,29 +102,17 @@ class EventsManager {
     }
 
     async checkAuthentication() {
-        try {
-            this.currentUser = await AuthService.getCurrentUser();
-            if (!this.currentUser) {
+        // Subscribe to global auth state changes
+        authManager.onAuthStateChanged(async (user) => {
+            if (user) {
+                this.currentUser = user;
+                
+                // Load user groups and events
+                await this.loadData();
+            } else {
                 this.showAuthAlert();
-                return;
             }
-            
-            // Update sidebar with user info
-            this.updateSidebarUser();
-            
-            // Load user groups and events
-            await this.loadData();
-        } catch (error) {
-            console.error('Authentication error:', error);
-            this.showAuthAlert();
-        }
-    }
-
-    updateSidebarUser() {
-        const userNameElement = document.getElementById('sidebar-user-name');
-        if (userNameElement && this.currentUser) {
-            userNameElement.textContent = this.currentUser.displayName || this.currentUser.email?.split('@')[0] || 'NEPP User';
-        }
+        });
     }
 
     showAuthAlert() {
